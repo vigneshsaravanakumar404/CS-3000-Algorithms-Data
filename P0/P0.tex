@@ -1,0 +1,177 @@
+\documentclass[11pt, a4paper]{article}
+
+% One of the following is required: problemset, recitation, quiz, exam
+% The following are required: handoutnum, assigneddate.
+% If there is only one date, set both duedate and assigneddate to be the same.
+% Do not change handoutnum or dates
+\usepackage[
+problemset,
+% exam,
+% lecturenote,
+handoutnum={0 - LaTeX Basics},
+% notetitle={LaTeX Basics},
+assigneddate={September 7, 2025}, duedate={September 11, 2025},
+% % Uncomment the line below IF these are solutions
+% solution,
+% % Uncomment the line below IF you are a student submitting solutions
+% student,
+% % Replace with your name
+% name={Fill Submitter's Name},
+% Replace with names of all group members who collarborated on this.
+% If unsure about ordering, then you can follow the convention in theory
+% and list names alphabetically by last name.
+groupmembers={Fill collaborators' names},
+math-preamble,graphicspaths
+]{course-handouts}
+% Be careful of commas and put text with spaces within {curly braces}
+% Don't use a comma at the end, but do use commas between options.
+% Weird errors occur otherwise, I wasted some time failing to debug those.
+
+% DO NOT EDIT
+% These are fixed values that should not be changed during this course.
+\pgfkeys{/course-handouts/.cd,
+  instructorname = {Akshar Varma},
+  coursename = {CS3000 Algorithms \& Data}}
+% Alternatively you can move the above lines into a file cs3000-spring-21-info.tex
+% and replace it with `\input{cs3000-spring-21-info}`
+
+
+% Add any macros you want below, or put them in a separate file and \input{file}
+% keeping the preamble clean can keep you sane.
+
+
+
+\begin{document}
+% Do not change either of the below lines.
+\insertHandoutInfoBox{}
+
+This ``problem set'' is primarily to get you oriented with \LaTeX, not really to test anything. I decided to add to the content to provide some prerequisite and background revision and practice. None of this is necessary, however, it is recommended that you familiarize yourself with both the LaTeX and the math content.
+
+In many cases, the LaTeX code has been removed. Your goal is to recreate the content as closely as you can. Again, this is for your practice, not graded at all.
+
+\newproblem{Proof Practice}{}
+\begin{enumerate}[]
+\item Prove by induction that: $\forall n \in \NN,\; \sum_{i=1}^n i^2 = \frac{n(n+1)(2n+1)}{6}$
+\item Prove by induction that: $\forall n \in \NN,\; \sum_{i=1}^n i^3 = \left( \sum_{i=0}^{n}i \right)^2$
+\item Prove by contradiction that: $\sqrt{2}$ is irrational.
+\end{enumerate}
+
+\begin{solution}
+  % Fill here
+\end{solution}
+
+\newproblem{Passage}{}
+Typeset your favorite passage from a book, movie, series, song, game; anywhere basically. Just let me know where it is from as well.
+
+\begin{solution}
+  % Put YOUR solution here, and format it how you wish.
+
+  ...\\
+  ...\\
+  ...
+
+  % \textit{A Bene Gesserit litany} from \textsc{Dune} by \texttt{Frank Herbert}.
+
+  % Read more about \href{https://en.wikipedia.org/wiki/Dune_(novel)}{Dune} on Wikipedia. You can also visit the following to read about Frank Herbert: \url{https://en.wikipedia.org/wiki/Frank_Herbert}.
+\end{solution}
+
+\newproblem{Miscellaneous Mathematics}{}
+\begin{itemize}
+\item Define the Fibonacci numbers.
+\item What are the roots of: $ax^2 + bx + c = 0$?
+\item What is the sum of the series $a, a+d, a+2d, \dots, a+(n-1)d = \sum_{i=0}^{n-1} a + id = \sum_{i=1}^n a + (i-1)d$?
+\item What is the sum of the series $a, ar, ar^2, \dots, ar^{n-1} = \sum_{i=0}^{n-1} ar^{i} = \sum_{i=1}^n ar^{i-1}$?
+\end{itemize}
+
+%
+% You might want to try \left( \right) as well as replacing () with \{\} or with [].
+% If you want to explicitly control the size of these brackets, you can look at:
+% \l{} \r{} where {} can be any of big, Big, bigg, Bigg. In increasing sizes.
+%
+\begin{solution}
+  % Put your solution here
+  \begin{itemize}
+  \item Fibonacci
+    \begin{align*}
+      F_n = \begin{cases}
+              n & n \in \set{0, 1}\\
+              % Put the rest of your solution here
+              % You will need {} around subscripts and superscripts.
+              % You don't need \\ for the final line.
+            \end{cases}
+    \end{align*}
+  \item The roots of $ax^2 + bx + c = 0$ are:
+
+  \item Arithmetic Series and Sums. Let $a, d \in \RR$, then the series $a, a+d, a+2d, \dots, a+(n-1)d$ for $n \in \NN$ is an arithmetic progression. It is a sequence with a common difference between consecutive terms.
+    \begin{align*}
+      \sum_{i=0}^{n-1} a + id
+      % Fill the rest in.
+    \end{align*}
+
+    Intermediate step is to prove by induction that:
+    % Use the \tag*{Using assumption} after writing an equation to showcase reasoning
+    % Like this:
+    %
+    % &= (n+1) + \frac{n(n+1)}{2}\tag*{Using assumption}\\
+    %
+    % The black square is made via: \qed
+    % But it is built into the template I provide and
+    % it will appear at the end of the solution environments automatically
+    %
+    % Look at \, and \; inside math mode to play around with small spacing.
+    % If you want more spacing, look at \quad and \qquad.
+    %
+    % Text inside math mode is written using \text{Assume: } and so on.
+    % Note that we leave a space inside the \text{} command so that spacing is correct.
+    % Try dropping it to see what happens.
+    \begin{align*}
+      % \forall n\in\NN,\; \sum_{i=0}^{n} i &= \frac{n(n+1)}{2}\\
+      % \text{Base case: If } n=0,\;  \sum_{i=0}^{0} i &= 0 = 0\cdot\frac{1}{2} = \frac{n(n+1)}{2}\\
+      %
+      % Fill in.
+      %
+                                          % &= (n+1) + \frac{n(n+1)}{2}\tag*{Using assumption}\\
+    \end{align*}
+  \item Geometric series and sums. For $a \in \RR$, be a real number, then the series $a, ar, ar^2, \dots, ar^{n-1}$ is a geometric progression. It is a sequence with a common ratio between consecutive terms.
+    \begin{align*}
+      % Fill
+    \end{align*}
+
+    I remember this as: \textbf{next term minus first term, divided by common ratio minus one.}
+
+    A special case to keep in mind is when $|r| < 1$ and $n \to \infty$.
+    \begin{align*}
+      % Fill
+    \end{align*}
+
+    I remember this as: \textbf{first term, divided by one minus common ratio.}
+  \end{itemize}
+\end{solution}
+
+
+\newproblem{Including Images}{}
+Include a picture of something interesting.
+
+Learn how to include drawings in your documents with the \verb=\includegraphics{file}= command by submitting a picture of your favorite animal.
+You should also look into the h, t, b, p and H placements. \verb|keepaspectratio| is also a useful option to know.
+Play around with the \verb|height| and \verb|width| parameters.
+You would want to know how to use them with \verb|\textheight| and \verb|\textwidth| in particular.
+Other length units you should be aware of include \verb|em, ex, in, cm|.
+
+\begin{solution}
+  % Refer to earlier figures using \cref{...}. If you do not use the cleveref package (my template does), then you need to do Figure~\ref{...}.
+  % The ... above should be replaced with the content inside the label below the \caption command.
+
+% Put your solution here
+  \begin{figure}[htbp]
+    \centering
+    % \includegraphics[width=0.45\textwidth]{something in here}
+    \caption{Fill}
+    \label{blah-blah-blah}
+    % \label{fig:pythagoras-proof}
+    % Using fig: is a convention, not a requirement
+    % Similarly, tab: for tables, sec: for (sub)sections, eq: for equations, etc.
+    % Of course none of these are required, but are often helpful.
+  \end{figure}
+\end{solution}
+\end{document}
