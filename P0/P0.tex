@@ -51,36 +51,63 @@ In many cases, the LaTeX code has been removed. Your goal is to recreate the con
 
 \newproblem{Proof Practice}{}
 \begin{enumerate}[]
-\item Prove by induction that: $\forall n \in \NN,\; \sum_{i=1}^n i^2 = \frac{n(n+1)(2n+1)}{6}$
-\item Prove by induction that: $\forall n \in \NN,\; \sum_{i=1}^n i^3 = \left( \sum_{i=0}^{n}i \right)^2$
-\item Prove by contradiction that: $\sqrt{2}$ is irrational.
+	\item Prove by induction that: $\forall n \in \NN,\; \sum_{i=1}^n i^2 = \frac{n(n+1)(2n+1)}{6}$
+	\item Prove by induction that: $\forall n \in \NN,\; \sum_{i=1}^n i^3 = \left( \sum_{i=0}^{n}i \right)^2$
+	\item Prove by contradiction that: $\sqrt{2}$ is irrational.
 \end{enumerate}
 
 \begin{solution}
-  % Fill here
+	\begin{enumerate}
+	    \item  \begin{proof}[Proof by induction]
+    		Let $P(n)$ be the statement: $\sum_{i=1}^n i^2 = \frac{n(n+1)(2n+1)}{6}$
+    		
+    		\textbf{Base:} $P(1)$ is true since $1^2 = 1 = \frac{1 \cdot 2 \cdot 3}{6}$
+    		
+    		\textbf{Step:} Assume $P(k)$ holds. Then:
+    		$$\sum_{i=1}^{k+1} i^2 = \underbrace{\sum_{i=1}^{k} i^2}_{= \frac{k(k+1)(2k+1)}{6} \text{ by } P(k)} + (k+1)^2 = \cdots = \frac{(k+1)(k+2)(2k+3)}{6}$$
+    		
+    		Thus $P(k) \Rightarrow P(k+1)$, so by induction, $P(n)$ holds for all $n \in \mathbb{N}$.
+	\end{proof}
+        \item  I'm lazy I skipped.
+        \item  \begin{proof}[Proof by Contradiction] 
+            Assume that $\sqrt{2}$ is rational. Then $\exists{p,q}\in\mathbb{N}$ such that $\sqrt{2}=\frac{p}{q}$ where $q\neq{}0$ and $\frac{p}{q}$ is irreducible. Now $\sqrt{2}=\frac{p}{q} \implies 2 =\frac{p^2}{q^2} \implies 2q^2=p^2 \implies$ $p^2$ is even. 
+            
+            Since $p^2$ is even, $p$ must be even (as the square of an odd number is odd). Thus $p = 2k$ for some $k \in \mathbb{N}$.
+            
+            Substituting back: $2q^2 = p^2 = (2k)^2 = 4k^2 \implies q^2 = 2k^2$. Therefore $q^2$ is even, which means $q$ is even.
+            
+            But if both $p$ and $q$ are even, they share a common factor of 2, contradicting our assumption that $\frac{p}{q}$ is irreducible.
+            
+            Therefore, our assumption is false, and $\sqrt{2}$ is irrational.
+        \end{proof}
+	\end{enumerate}
 \end{solution}
 
 \newproblem{Passage}{}
 Typeset your favorite passage from a book, movie, series, song, game; anywhere basically. Just let me know where it is from as well.
 
 \begin{solution}
-  % Put YOUR solution here, and format it how you wish.
+	\textit{My name is Barry Allen, and I am the fastest man alive.}\\
+	\textit{When I was a child, I saw my mother killed by something impossible.}\\
+	\textit{My father went to prison for her murder.}\\
+	\textit{Then an accident made me the impossible.}\\
+	\textit{To the outside world, I'm an ordinary forensic scientist,}\\
+	\textit{but secretly, I use my speed to fight crime and find others like me.}\\
+	\textit{And one day, I'll find who killed my mother and get justice for my father.}\\
+	\textit{I am... The Flash.}
+	
+	\vspace{1em}
+	
+	\textit{Opening narration} from \textsc{The Flash} (2014 TV Series) by \texttt{The CW/DC Comics}.
 
-  ...\\
-  ...\\
-  ...
-
-  % \textit{A Bene Gesserit litany} from \textsc{Dune} by \texttt{Frank Herbert}.
-
-  % Read more about \href{https://en.wikipedia.org/wiki/Dune_(novel)}{Dune} on Wikipedia. You can also visit the following to read about Frank Herbert: \url{https://en.wikipedia.org/wiki/Frank_Herbert}.
 \end{solution}
 
 \newproblem{Miscellaneous Mathematics}{}
 \begin{itemize}
-\item Define the Fibonacci numbers.
-\item What are the roots of: $ax^2 + bx + c = 0$?
-\item What is the sum of the series $a, a+d, a+2d, \dots, a+(n-1)d = \sum_{i=0}^{n-1} a + id = \sum_{i=1}^n a + (i-1)d$?
-\item What is the sum of the series $a, ar, ar^2, \dots, ar^{n-1} = \sum_{i=0}^{n-1} ar^{i} = \sum_{i=1}^n ar^{i-1}$?
+	\item Define the Fibonacci numbers.
+	\item What are the roots of: $ax^2 + bx + c = 0$?
+	\item What is the sum of the series $a, a+d, a+2d, \dots, a+(n-1)d = \sum_{i=0}^{n-1} a + id = \sum_{i=1}^n a + (i-1)d$?
+	\item What is the sum of the series $a, ar, ar^2, \dots, ar^{n-1} = \sum_{i=0}^{n-1} ar^{i} = \sum_{i=1}^n ar^{i-1}$?
 \end{itemize}
 
 %
@@ -89,63 +116,63 @@ Typeset your favorite passage from a book, movie, series, song, game; anywhere b
 % \l{} \r{} where {} can be any of big, Big, bigg, Bigg. In increasing sizes.
 %
 \begin{solution}
-  % Put your solution here
-  \begin{itemize}
-  \item Fibonacci
-    \begin{align*}
-      F_n = \begin{cases}
-              n & n \in \set{0, 1}\\
-              % Put the rest of your solution here
-              % You will need {} around subscripts and superscripts.
-              % You don't need \\ for the final line.
-            \end{cases}
-    \end{align*}
-  \item The roots of $ax^2 + bx + c = 0$ are:
-
-  \item Arithmetic Series and Sums. Let $a, d \in \RR$, then the series $a, a+d, a+2d, \dots, a+(n-1)d$ for $n \in \NN$ is an arithmetic progression. It is a sequence with a common difference between consecutive terms.
-    \begin{align*}
-      \sum_{i=0}^{n-1} a + id
-      % Fill the rest in.
-    \end{align*}
-
-    Intermediate step is to prove by induction that:
-    % Use the \tag*{Using assumption} after writing an equation to showcase reasoning
-    % Like this:
-    %
-    % &= (n+1) + \frac{n(n+1)}{2}\tag*{Using assumption}\\
-    %
-    % The black square is made via: \qed
-    % But it is built into the template I provide and
-    % it will appear at the end of the solution environments automatically
-    %
-    % Look at \, and \; inside math mode to play around with small spacing.
-    % If you want more spacing, look at \quad and \qquad.
-    %
-    % Text inside math mode is written using \text{Assume: } and so on.
-    % Note that we leave a space inside the \text{} command so that spacing is correct.
-    % Try dropping it to see what happens.
-    \begin{align*}
-      % \forall n\in\NN,\; \sum_{i=0}^{n} i &= \frac{n(n+1)}{2}\\
-      % \text{Base case: If } n=0,\;  \sum_{i=0}^{0} i &= 0 = 0\cdot\frac{1}{2} = \frac{n(n+1)}{2}\\
-      %
-      % Fill in.
-      %
-                                          % &= (n+1) + \frac{n(n+1)}{2}\tag*{Using assumption}\\
-    \end{align*}
-  \item Geometric series and sums. For $a \in \RR$, be a real number, then the series $a, ar, ar^2, \dots, ar^{n-1}$ is a geometric progression. It is a sequence with a common ratio between consecutive terms.
-    \begin{align*}
-      % Fill
-    \end{align*}
-
-    I remember this as: \textbf{next term minus first term, divided by common ratio minus one.}
-
-    A special case to keep in mind is when $|r| < 1$ and $n \to \infty$.
-    \begin{align*}
-      % Fill
-    \end{align*}
-
-    I remember this as: \textbf{first term, divided by one minus common ratio.}
-  \end{itemize}
+	% Put your solution here
+	\begin{itemize}
+		\item Fibonacci
+		      \begin{align*}
+		      	F_n = \begin{cases}
+		      	n & n \in \set{0, 1} \\
+		      	% Put the rest of your solution here
+		      	% You will need {} around subscripts and superscripts.
+		      	% You don't need \\ for the final line.
+		      	\end{cases}
+		      \end{align*}
+		\item The roots of $ax^2 + bx + c = 0$ are:
+		      
+		\item Arithmetic Series and Sums. Let $a, d \in \RR$, then the series $a, a+d, a+2d, \dots, a+(n-1)d$ for $n \in \NN$ is an arithmetic progression. It is a sequence with a common difference between consecutive terms.
+		      \begin{align*}
+		      	\sum_{i=0}^{n-1} a + id 
+		      	% Fill the rest in.                     
+		      \end{align*}
+		      
+		      Intermediate step is to prove by induction that:
+		      % Use the \tag*{Using assumption} after writing an equation to showcase reasoning
+		      % Like this:
+		      %
+		      % &= (n+1) + \frac{n(n+1)}{2}\tag*{Using assumption}\\
+		      %
+		      % The black square is made via: \qed
+		      % But it is built into the template I provide and
+		      % it will appear at the end of the solution environments automatically
+		      %
+		      % Look at \, and \; inside math mode to play around with small spacing.
+		      % If you want more spacing, look at \quad and \qquad.
+		      %
+		      % Text inside math mode is written using \text{Assume: } and so on.
+		      % Note that we leave a space inside the \text{} command so that spacing is correct.
+		      % Try dropping it to see what happens.
+		      \begin{align*}
+		      	% \forall n\in\NN,\; \sum_{i=0}^{n} i &= \frac{n(n+1)}{2} \\
+		      	% \text{Base case: If } n=0,\;  \sum_{i=0}^{0} i &= 0 = 0\cdot\frac{1}{2} = \frac{n(n+1)}{2} \\
+		      	% 
+		      	% Fill in. 
+		      	% 
+		      	% &= (n+1) + \frac{n(n+1)}{2}\tag*{Using assumption} \\
+		      \end{align*}
+		\item Geometric series and sums. For $a \in \RR$, be a real number, then the series $a, ar, ar^2, \dots, ar^{n-1}$ is a geometric progression. It is a sequence with a common ratio between consecutive terms.
+		      \begin{align*}
+		      	% Fill 
+		      \end{align*}
+		      
+		      I remember this as: \textbf{next term minus first term, divided by common ratio minus one.}
+		      
+		      A special case to keep in mind is when $|r| < 1$ and $n \to \infty$.
+		      \begin{align*}
+		      	% Fill 
+		      \end{align*}
+		      
+		      I remember this as: \textbf{first term, divided by one minus common ratio.}
+	\end{itemize}
 \end{solution}
 
 
@@ -159,19 +186,19 @@ You would want to know how to use them with \verb|\textheight| and \verb|\textwi
 Other length units you should be aware of include \verb|em, ex, in, cm|.
 
 \begin{solution}
-  % Refer to earlier figures using \cref{...}. If you do not use the cleveref package (my template does), then you need to do Figure~\ref{...}.
-  % The ... above should be replaced with the content inside the label below the \caption command.
-
-% Put your solution here
-  \begin{figure}[htbp]
-    \centering
-    % \includegraphics[width=0.45\textwidth]{something in here}
-    \caption{Fill}
-    \label{blah-blah-blah}
-    % \label{fig:pythagoras-proof}
-    % Using fig: is a convention, not a requirement
-    % Similarly, tab: for tables, sec: for (sub)sections, eq: for equations, etc.
-    % Of course none of these are required, but are often helpful.
-  \end{figure}
+	% Refer to earlier figures using \cref{...}. If you do not use the cleveref package (my template does), then you need to do Figure~\ref{...}.
+	% The ... above should be replaced with the content inside the label below the \caption command.
+	
+	% Put your solution here
+	\begin{figure}[htbp]
+		\centering
+		% \includegraphics[width=0.45\textwidth]{something in here}
+		\caption{Fill}
+		\label{blah-blah-blah}
+		% \label{fig:pythagoras-proof}
+		% Using fig: is a convention, not a requirement
+		% Similarly, tab: for tables, sec: for (sub)sections, eq: for equations, etc.
+		% Of course none of these are required, but are often helpful.
+	\end{figure}
 \end{solution}
 \end{document}

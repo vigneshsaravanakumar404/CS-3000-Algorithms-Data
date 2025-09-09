@@ -1,0 +1,54 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{algorithm, algpseudocode}
+\usepackage{hyperref}
+\usepackage{tcolorbox}
+
+% Theorem environments
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+
+\title{CS3000 Algorithms - Course Notes}
+\author{Your Name}
+\date{Fall 2025}
+
+\begin{document}
+\maketitle
+\tableofcontents
+\newpage
+
+\section{Asymptotics and Mathematical Foundations}
+
+    \subsection{Asymptotic Notations}        
+        \paragraph{Big-O Notation: $f(n) = O(g(n))$}
+        There is some positive factor $k$ and a threshold value $n_0$ such that for any $n$ beyond this threshold, the value of $f(n)$ is upper bounded by $k \cdot g(n)$.
+        $$\exists k > 0, \exists n_0, \forall n > n_0 \text{ such that: } |f(n)| \leq k \cdot g(n)$$
+        $$\lim_{n \to \infty} \sup \frac{f(n)}{g(n)} < \infty$$
+        
+        \paragraph{Big-Omega Notation: $f(n) = \Omega(g(n))$}
+        There is some positive factor $k$ and a threshold value $n_0$ such that for any $n$ beyond this threshold, the value of $f(n)$ is lower bounded by $k \cdot g(n)$.
+        $$\exists k > 0, \exists n_0, \forall n > n_0 \text{ such that: } f(n) \geq k \cdot g(n)$$
+        $$\lim_{n \to \infty} \inf \frac{f(n)}{g(n)} > 0$$
+        
+        \paragraph{Big-Theta Notation: $f(n) = \Theta(g(n))$}
+        There are positive factors $k_1$ and $k_2$ and a threshold value $n_0$ such that for any $n$ beyond this threshold, the value of $f(n)$ is bounded both above and below by multiples of $g(n)$.
+        $$\exists k_1, k_2 > 0, \exists n_0, \forall n > n_0 \text{ such that: } k_1 \cdot g(n) \leq f(n) \leq k_2 \cdot g(n)$$
+        $$0 < \lim_{n \to \infty} \frac{f(n)}{g(n)} < \infty$$
+        
+        \paragraph{Little-o Notation: $f(n) = o(g(n))$}
+        For every positive factor $k$ (no matter how small), there exists a threshold value $n_0$ such that for any $n$ beyond this threshold, the value of $f(n)$ is strictly less than $k \cdot g(n)$.
+        $$\forall k > 0, \exists n_0, \forall n > n_0 \text{ such that: } |f(n)| < k \cdot g(n)$$
+        $$\lim_{n \to \infty} \frac{f(n)}{g(n)} = 0$$
+        
+        \paragraph{Little-omega Notation: $f(n) = \omega(g(n))$}
+        For every positive factor $k$ (no matter how large), there exists a threshold value $n_0$ such that for any $n$ beyond this threshold, the value of $f(n)$ is strictly greater than $k \cdot g(n)$.
+        $$\forall k > 0, \exists n_0, \forall n > n_0 \text{ such that: } f(n) > k \cdot g(n)$$
+        $$\lim_{n \to \infty} \frac{f(n)}{g(n)} = \infty$$
+            
+
+
+\end{document}
