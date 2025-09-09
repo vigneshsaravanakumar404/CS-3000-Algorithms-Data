@@ -1,0 +1,448 @@
+% This is a package to create handouts in courses
+% Particular setups exist for:
+% problem sets, recitations, quizzes, exams,
+% as well as solutions for each of these;
+% and finally for lecture notes and (student) scribe notes.
+%
+% Author: Akshar Varma
+% Date: 16th April, 2023
+% Some of the commands, particularly \handout were inspired by LaTeX code and
+% templates used in Daniel Wichs' courses and I'm sure I also picked up ideas
+% from Huy Nguyen's problem set and scribe note templates.
+% I have since rewritten essentially all of it to better fit my preferences
+% and/or newer LaTeX packages or idioms I found discussed online.
+% But they did inspire many aspects and I'm thankful for that.
+%
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{course-handouts}[Package providing a custom header and various useful commands for all manner of handouts given out while teaching courses: problem sets, exams, recitations, quizzes, their solutions, lecture notes, (student) scribe notes, etc.]
+%
+%
+
+
+% Will be very useful in handling arguments and so on.
+\RequirePackage{etoolbox}       % if/then/else, booleans, and other tools and goodies
+
+% Define new boolean variables
+\renewcommand*{\do}[1]{\providebool{#1}}
+\docsvlist{is-solution,is-student,is-instructor,
+  is-problem-set,is-recitation,is-exam,is-quiz,is-compendium,
+  is-exam-version-A,is-exam-version-B,
+  is-lecture-note,is-scribe-note,
+  use-math-preamble,use-tables,use-tikz}
+\renewcommand*{\do}[1]{\global\boolfalse{#1}}
+\docsvlist{is-solution,is-student,is-instructor,
+  is-problem-set,is-recitation,is-exam,is-quiz,is-compendium,
+  is-exam-version-A,is-exam-version-B,
+  is-lecture-note,is-scribe-note,
+  use-math-preamble,use-tables,use-tikz}
+
+
+% The following is for setting options for this package
+% Primarily used for author/course name, settings type of handout and so on.
+%
+% http://mirrors.ctan.org/macros/latex/contrib/pgfopts/pgfopts.pdf
+\RequirePackage{pgfopts}
+% http://mirrors.ctan.org/graphics/pgf/base/doc/pgfmanual.pdf
+\pgfkeys{                       % The MAIN things.
+  /course-handouts/.cd,
+  /course-handouts/.is family,
+  instructorname/.store in=\instructorname,
+  coursename/.store in=\coursename,
+  assigneddate/.store in=\assigneddate,
+  duedate/.store in=\duedate,
+  handoutnum/.store in=\handoutnum, %PS 3, Recitation 5, Exam 2, Exam Final, etc.
+}
+
+% Booleans in use
+\pgfkeys{course-handouts,
+  solution/.is if=is-solution,   % If this is a solution handout
+  student/.is if=is-student,     % If this is being submitted by a student
+  instructor/.is if=is-instructor,     % If this is by an instructor
+  problemset/.is if=is-problem-set, % If this is a problem set
+  recitation/.is if=is-recitation, % ... recitation
+  quiz/.is if=is-quiz,             % ... quiz
+  exam/.is if=is-exam,             % ... exam
+  compendium/.is if=is-compendium, % ... compendium
+  examversionA/.is if=is-exam-version-A, % bool is true if exam version A, false if B.
+  examversionB/.is if=is-exam-version-B, % bool is true if exam version A, false if B.
+  lecturenote/.is if=is-lecture-note,
+  scribenote/.is if=is-scribe-note,
+  %
+  math-preamble/.is if=use-math-preamble,
+  tikz/.is if=use-tikz,
+  tables/.is if=use-tables,
+  graphicspaths/.store in=\graphicsdirectories,
+  graphicspaths/.default={{./images}{./diagrams}{./figures}{./files}},
+}
+
+% Students need to fill these.
+\pgfkeys{course-handouts,
+  name/.store in=\name,
+  name/.default={Provide submitter's name},
+  name/.initial={Provide submitter's name},
+  name/.value required,
+  groupmembers/.store in=\groupmembers,
+  groupmembers/.default={Provide collaborators' names},
+  groupmembers/.initial={Provide collaborators' names},
+  groupmembers/.value required
+  examversion/.store in=\examversion, % string for exam version (generally A or B)
+  notetitle/.store in=\notetitle,
+  notetitle/.default={Provide title for note},
+  notetitle/.initial={Provide title for note},
+  notetitle/.value required,
+}
+
+%
+
+% This is all that is needed for using pgfopts.
+% \ProcessPgfOptions* -> will use /course-handouts/ (current filename) as the path
+% Better to provide the key path.
+\ProcessPgfOptions{course-handouts}
+% In our case, course-handouts is used as a scope,
+% in case pgfopts is used in other places.
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Start requiring packages. Some are optional based on passed in arguments
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% All packages that are being required with brief reason.
+
+%
+% We want lots of usable space in our handouts since many might get printed.
+\RequirePackage[
+left=0.1\paperwidth,
+right=0.1\paperwidth,
+textwidth=0.8\paperwidth,
+top=0.1\paperheight,
+bottom=0.1\paperheight,
+textheight=0.8\paperheight,
+marginparwidth=0.15\paperwidth,
+marginparsep=3ex
+]{geometry}
+
+%
+% parskip makes paragraphs look better than with indentation
+\RequirePackage{parskip}
+
+% Use my collection of math commands harvested from many collections
+% Includes commands inspired by:
+% - Daniel Wichs
+% - Huy Nguyen
+% - Ravi Sundaram
+% - (will be included) Clement Canonne
+%
+
+\ifbool{use-math-preamble}{\RequirePackage{math-commands-preamble}}{}
+% All the below (and more) are included in there
+% \RequirePackage{amsmath}        % Math typesetting
+% \RequirePackage{amsthm}         % Theorem and other such environments for math
+% \RequirePackage{amsfonts}       % Fonts specific to math
+% \RequirePackage{amssymb}        % Math symbols
+% \RequirePackage{latexsym}       % LaTeX symbols font
+% \RequirePackage{nicefrac}       % For better fractions in text: 1/2 will be better.
+
+
+\ifbool{use-tikz}{\RequirePackage{tikz}%
+  \usetikzlibrary{arrows, arrows.meta, automata, backgrounds, calc, decorations, fit, positioning,  mindmap, shapes, trees}}{}
+
+\ifbool{use-tables}{
+  \RequirePackage{float}          % nicer tables/figures/other floating boxes
+  \RequirePackage{booktabs}           % For professional quality tables
+  \RequirePackage{array}              % For better tables
+  \RequirePackage{multirow}           % For fancy stuff in tables
+  \RequirePackage{multicol}           % For dealing with content on multiple columns
+  \newcommand{\PreserveBackslash}[1]{\let\temp=\\#1\let\\=\temp}
+  \newcolumntype{C}[1]{>{\PreserveBackslash\centering}m{#1}}
+  \newcolumntype{R}[1]{>{\PreserveBackslash\raggedleft}m{#1}}
+  \newcolumntype{L}[1]{>{\PreserveBackslash\raggedright}m{#1}}
+}{}
+
+% Colors, and graphics
+\RequirePackage[dvipsnames]{xcolor} % See also: https://en.wikibooks.org/wiki/LaTeX/Colors
+\RequirePackage{graphicx}              % For including images in the PDF.
+\graphicspath{\graphicsdirectories}
+% \graphicspath{{./graphs/},{./images/},{./files/}} %folders to check for images/graphs in.
+
+
+\RequirePackage{enumitem}       % Better enumerate environment
+\RequirePackage{multicol}           % For dealing with content on multiple columns
+
+% Need this for some of the fancy headers for exams and so on.
+\RequirePackage{fancyhdr}       % Page headers for exams, details are available below.
+
+
+\RequirePackage{marginnote}     % margin graffiti (for side comments in solutions).
+\newcommand{\graffiti}[1]{\marginnote{\raggedright\textsl{#1}}}
+% This command is all that is needed, so putting it here instead of with others.
+
+\RequirePackage{hyperref}      % For dealing with URLs
+\hypersetup{                   % some setup for URLs
+    colorlinks,
+    linkcolor={red!50!black},
+    citecolor={blue!50!black},
+    urlcolor={blue!80!black}
+}
+\RequirePackage[capitalise,noabbrev]{cleveref}
+
+
+\RequirePackage{algorithm}
+% For pseudo code. This is the most updated package.
+% Plus, its syntax is neat and simple, but extensible.
+\RequirePackage{pseudo}
+\RequirePackage{tabto}
+\TabPositions{5em}
+% \usepackage{tcolorbox} % possibly with options
+% \tcbuselibrary{skins,theorems}
+% \newtcbtheorem{PseudoAlgorithm}{Algorithm}{pseudo/ruled}{alg}
+\pseudoset{ct-left=\texttt{/\!/}\,, ct-right=,ctfont}
+\usepackage{tabularx}
+\pseudodefinestyle{fullwidth}{
+    label=\small\arabic*, kw,
+    begin-tabular =
+    \tabularx{\linewidth}[t]{@{}
+      r % Labels
+      >{\pseudosetup} % Indent, font, ...
+      X % Code (flexible)
+      >{\leavevmode\small\color{gray}\ct\bgroup} % Comment styling
+      p{#1\linewidth} % Comments (fixed)
+      <{\egroup}
+      @{}},
+    end-tabular = \endtabularx,
+    setup-append = \RestorePseudoEq
+}
+
+% \RequirePackage{listings}       % For displaying code verbatim (with highlighting and so on)
+\RequirePackage{minted}         % Prefer minted instead of listings for verbatim code
+\RequirePackage{csquotes}       % For displayquotes environment
+
+% All require packages should end above here.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Error checking the options passed in to the package
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\AfterEndPreamble{
+  % Mostly error checking in the options that have been passed in.
+
+  % Once the user has decided what type of handout it is, set the appropriate
+  % string into the macro \handoutNameString for easier use.
+  % This is in a hook since we do not know the value of \what until the user
+  % selects the option when importing the package.
+
+  % Don't select more than one handout type.
+  % I don't know how to do this any better.
+  \newcounter{numTypes}
+  \setcounter{numTypes}{0}
+  \ifbool{is-problem-set}{\stepcounter{numTypes}}{}
+  \ifbool{is-recitation}{\stepcounter{numTypes}}{}
+  \ifbool{is-quiz}{\stepcounter{numTypes}}{}
+  \ifbool{is-exam}{\stepcounter{numTypes}}{}
+  \ifbool{is-compendium}{\stepcounter{numTypes}}{}
+  \ifbool{is-lecture-note}{\stepcounter{numTypes}}{}
+  \ifbool{is-scribe-note}{\stepcounter{numTypes}}{}
+
+  \ifnumequal{\value{numTypes}}{1}{}{
+    % If the count is NOT 1.
+    \PackageError{Course Handouts Preamble}{You must pass in exactly one of problemset, exam, quiz, recitation, compendium, lecturenote, or scribenote as an option.}{}}
+
+
+  % Only one of examversion A and B should be selected.
+  \ifboolexpr{bool {is-exam-version-A} and bool {is-exam-version-B}}{
+  \PackageError{Course Handouts Preamble}{You cannot pass in both examversionA and examversionB. Please choose one and remove the other option from the list when importing this package.}{}}{}
+
+  % Only one of student and instructor should be selected.
+  \ifboolexpr{bool {is-student} and bool {is-instructor}}{
+    \PackageError{Course Handouts Preamble}{You cannot pass in both student and instructor. Please choose one and remove the other option from the list when importing this package.}{}}{}
+
+  % Throw an error if assigneddate is not defined.
+  \ifundef{\assigneddate}{
+  \PackageError{Course Handouts Preamble}{You must provide an assigned date in the options, even if it is the empty value {}.}{}}{}
+
+  \ifundef{\duedate}{
+  \PackageWarning{Course Handouts Preamble}{You haven't provided a due date in the options, it is recommended to do so if applicable.}{}}{}
+
+}
+%
+% All package option selection code ends here.
+% Everything below is code that sets up other commands used elsewhere.
+%
+
+% If solution, add Solution to \solutionText
+% Further, if not a student, then add Instructor before Solution
+\newcommand\solutionText{\ifbool{is-solution}{\ifbool{is-student}{}{Instructor }Solution}{}}
+%
+
+% Customize the page number displayed based on type of handout
+\newcommand\pageNumberText{
+  \ifbool{is-problem-set}{Problem set \handoutnum{}, \solutionText{} (\assigneddate{}~--~\duedate{});\hfill}{}
+  \ifbool{is-recitation}{Recitation \handoutnum{}, \solutionText{} (\assigneddate{}~--~\duedate{})}{}
+  \ifbool{is-quiz}{Quiz \handoutnum{}, \solutionText{} \assigneddate{}}{}
+  \ifbool{is-compendium}{Compendium \solutionText{}}{}
+  \ifbool{is-lecture-note}{Lecture Note \handoutnum{}: \notetitle}{}
+  \ifbool{is-scribe-note}{Scribe Note \handoutnum{}: \notetitle}{}
+}
+\renewcommand{\thepage}{\pageNumberText{} \hfill Page \arabic{page}}
+%
+
+
+% Do a fancy header if this is an exam, but not if it is the solution for exams.
+\ifbool{is-exam}                    %Only kicks in for exams
+{\pagestyle{fancy}
+  \fancyhf{}
+  \renewcommand{\thepage}{\pageNumberText}
+  \lhead{\thepage}
+  \rhead{\notbool{is-solution}{\textbf{NAME}: {\rule{15em}{0pt}}}{}}
+  \fancyfoot[C]{Page: \arabic{page}}
+}{}
+%
+
+% This is the thing that is most similar to Daniel's latex.
+% I changed his handout command to make it use more LaTeX and less TeX.
+\setlength{\fboxsep}{1.5ex}
+\setlength{\fboxrule}{0.25ex}
+% Arguments are in order: assigned date, Name, due date and central text
+\newcommand{\handout}[4]{
+  \noindent
+  \begin{center}
+    \framebox{
+      \parbox{0.9\textwidth}{
+        \begin{minipage}[c][1.5em][t]{0.9\textwidth}
+          \textbf{\coursename} \hfill \textit{#1}
+          \end{minipage}
+        \begin{minipage}[c][2em][c]{0.9\textwidth}
+          {\Large \hfill #4  \hfill}
+          \end{minipage}
+        \begin{minipage}[c][1.5em][b]{0.9\textwidth}
+          \textbf{#2} \hfill \textit{#3}
+          \end{minipage}
+      }
+    }
+  \end{center}
+  \vspace{2ex}
+}
+%
+
+%
+% This is the thing that does the logic heavy lifting of figuring out how to use
+% the \handout command appropriately given the type of handout.
+% This is done automatically so that consistency is trivially present throughout the course.
+% Change with caution and care.
+%
+\newcommand{\insertHandoutInfoBox}{
+  % Remember, arguments in order: assigned date, Name, due date and central text
+
+  % Problem set questions, NOT solutions
+  \ifboolexpr{bool {is-problem-set} and not bool {is-solution}}
+  {\handout{Out: \assigneddate}{\instructorname}{Due: \duedate}{Problem Set \handoutnum}}{}
+
+  % Problem set questions, student's solutions
+  \ifboolexpr{bool {is-problem-set} and bool {is-solution} and bool {is-student}}
+  {\handout{Out: \assigneddate}{Name: \name}{Due: \duedate}{Solutions to Problem Set \handoutnum}
+    \textbf{Group members:} \groupmembers{}}{}
+
+  % Problem set questions, instructor solutions
+  \ifboolexpr{bool {is-problem-set} and bool {is-solution} and not bool {is-student}}
+  {\handout{Out: \assigneddate}{\instructorname}{Due: \duedate}{Instructor Solutions to Problem Set \handoutnum}}{}
+
+  % Recitations
+  \ifboolexpr{bool {is-recitation} and not bool {is-solution}}
+  {\handout{}{\instructorname}{Date: \duedate}{Recitations \handoutnum}}{}
+
+  % Recitations solutions
+  \ifboolexpr{bool {is-recitation} and bool {is-solution}}
+  {\handout{}{\instructorname}{Date: \duedate}{Solutions to Recitations \handoutnum}{}}{}
+
+  % Quiz
+  \ifboolexpr{bool {is-quiz} and not bool {is-solution}}
+  {\handout{}{\instructorname}{Date: \assigneddate}{Quiz \handoutnum}{}}{}
+
+  % Quiz student solutions
+  \ifboolexpr{bool {is-quiz} and bool {is-solution} and bool {is-student}}
+  {\handout{}{Name: \name}{Date: \assigneddate}{Solutions to Quiz \handoutnum}{}}{}
+
+  % Quiz instructor solutions
+  \ifboolexpr{bool {is-quiz} and bool {is-solution} and not bool {is-student}}
+  {\handout{}{\instructorname}{Date: \assigneddate}{Instructor Solutions to Quiz \handoutnum}{}}{}
+
+  % Exam
+  \ifboolexpr{bool {is-exam} and not bool {is-solution}}
+  {\handout{}{\instructorname}{Date: \assigneddate}{Exam \handoutnum}{}}{}
+
+  % Exam solutions (only instructor)
+  \ifboolexpr{bool {is-exam} and bool {is-solution}}
+  {\handout{}{\instructorname}{Date: \assigneddate}{Solutions to Exam \handoutnum}{}}{}
+
+
+  % assigned date, Name, due date and central text
+  % Compendium of problems, so fairly simply handout box
+  \ifboolexpr{bool {is-compendium} and not bool {is-solution}}
+  {\handout{}{\instructorname}{}{Compendium}{}}{}
+
+  % Compendium with solutions
+  \ifboolexpr{bool {is-compendium} and bool {is-solution}}
+  {\handout{}{\instructorname}{}{Compendium with Solutions}{}}{}
+
+  % Lecture Notes
+  \ifboolexpr{bool {is-lecture-note}}
+  {\handout{}{\instructorname}{Date: \assigneddate}{Lecture Note \handoutnum: \notetitle}}{}
+
+
+  % Scribe Notes
+  \ifboolexpr{bool {is-scribe-note}}
+  {\handout{}{\name}{Date: \assigneddate}{Scribe Note \handoutnum}}{}
+  % {\handout{}{\name}{Date: \assigneddate}{Scribe Note \handoutnum: \notetitle}}{}
+
+
+}
+
+
+% These are the things that'll be used the most.
+\newcounter{problemCounter} % count problems
+\newcommand{\problemNumber}{\arabic{problemCounter}}  % problem number as printed
+\newcommand{\increaseProblemCounter}{\addtocounter{problemCounter}{1}}  % increment++
+
+%first argument is short description, second is the number of points
+\newcommand{\newproblem}[2]{\increaseProblemCounter
+\section*{Problem \problemNumber~(#1) \hfill \ifboolexpr{not bool {is-recitation}}{#2}}
+}
+
+% Difficult to give this a nice name
+% The normal ``problem'' environment is taken up by math theorem like environment
+% newproblem makes sense as a command.So probably no use in keeping this.
+% \newenvironment{newproblemEnv}[2]{
+%   \increaseProblemCounter
+%   % \hspace{\dimexpr-11ex}
+%   % \makebox[11ex][r]{\textbf{\large{Problem}}~}
+%   \textbf{\large{Problem \problemNumber~(#1) \hfill \ifboolexpr{not bool {is-recitation}}{#2}}\\}}{\medbreak}
+
+
+%
+% The solutions/hints commands/environments' a mix between Daniel's and Huy's.
+% That was the original inspiration, once upon a time.
+% Since then, they've changed.
+%
+\newenvironment{solution}{\par\noindent\subsection*{Solution:}}{\hfill\qedsymbol}
+\newenvironment{solsketch}{\par\noindent\subsection*{Solution Sketch:}}{\hfill\qedsymbol}
+
+\newcommand{\hint}[1]{[\textit{\textbf{Hint}: {#1}}]}
+\newcommand{\markbonusproblem}{\textbf{(\textasteriskcentered)}}
+
+
+% Two versions for exams. Have boolean always defined
+\newbool{VER_A}
+\boolfalse{VER_A}
+\usepackage{calligra}
+\usepackage[T1]{fontenc}
+\newcommand{\examNumberOfProblems}{6}
+\newcommand{\examTotalTime}{90 Minutes}
+\newcommand{\examTotalPoints}{100}
+\newcommand{\pointstable}{
+\begin{tabular}{|c|c|c|c|c|c|c|}\hline
+  Question & 1 & 2 & 3 & 4 & 5 & Total\\\hline
+  Points & 10 & 20 & 20 & 20 & 30 & 100\\\hline
+\end{tabular}
+}

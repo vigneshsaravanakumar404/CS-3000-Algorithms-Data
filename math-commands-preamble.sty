@@ -1,0 +1,680 @@
+% This is a ``package'' that contains many of my preferred math commands
+% Particularly, it has things for probability, linear algebra, complexity
+% and I'm sure many other miscellaneous things as well.
+%
+% Author: Akshar Varma
+% Some of these commands were inspired by LaTeX code that I picked up from
+% those that were used by Daniel Wichs, Huy Nguyen, Ravi Sundaram, Hongyang Zhang
+% I have since changed/rewritten a lot of it, but they did inspire aspects.
+%
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{math-commands-preamble}[Preamble used for all math related commands that I like to use.]
+%
+%
+
+
+\RequirePackage{amsmath}        % Math typesetting
+\RequirePackage{amsthm}         % Theorem and other such environments for math
+\RequirePackage{amsfonts}       % Fonts specific to math
+\RequirePackage{amssymb}        % Math symbols
+\RequirePackage{mathtools}      % more math related tools
+\RequirePackage{bm}             % For better bold symbols in math land
+\RequirePackage{latexsym}       % LaTeX symbols font
+\RequirePackage{nicefrac}       % For better fractions in text: 1/2 will be better.
+\RequirePackage{mathdots}       % Improves \ddots, \vdots, and provides \iddots
+\RequirePackage{cancel}         % So that we have \cancel, \bcancel, \xcancel and \cancelto
+
+\newcounter{lemmaCounter}
+\newcounter{corollaryCounter}
+\newcounter{definitionCounter}
+\stepcounter{lemmaCounter}
+\stepcounter{corollaryCounter}
+\stepcounter{definitionCounter}
+\ifdefined\theorem
+\else
+  \newtheorem{theorem}{Theorem}[section]
+\fi
+\ifdefined\corollary
+\else
+  \newtheorem{corollary}{Corollary}[corollaryCounter]
+\fi
+\ifdefined\definition
+\else
+\newtheorem{definition}{Definition}[definitionCounter]
+\fi
+\ifdefined\lemma
+\else
+\newtheorem{lemma}[lemmaCounter]{Lemma}
+\fi
+\ifdefined\problem
+\else
+\newtheorem{problem}{Problem}
+\fi
+\newtheorem*{remark}{Remark}
+\newtheorem*{question}{Question}
+\newcounter{exampleCounter}
+\newtheorem{myexample}[exampleCounter]{Example}
+
+% Reference guide for Theorem styles
+%
+% definition has boldface title, romand body. Commonly used in definitions, conditions, problems and examples.
+% plain has boldface title, italicized body. Commonly used in theorems, lemmas, corollaries, propositions and conjectures.
+% remark has italicized title, romman body. Commonly used in remarks, notes, annotations, claims, cases, acknowledgments and conclusions.
+%
+% Custom theorem environments
+% \@ifclassloaded{beamer}{}
+% {\newtheorem{theorem}{Theorem}[section]
+% \newtheorem{corollary}{Corollary}[theorem]
+% \newtheorem{lemma}[theorem]{Lemma}
+% \newtheorem*{remark}{Remark}
+% }
+
+
+% An underline for #1 length in ex units
+\newcommand\ul[1]{\underline{\hspace{#1ex}}}
+% A star symbol
+\newcommand\mystar{$\star$}
+
+% Changing the qed symbol to a black square
+\renewcommand\qedsymbol{$\blacksquare$}
+% Probably don't do this, prefer cleveref
+\renewcommand{\eqref}[1]{Equation~(\ref{#1})}
+% Prefer this if you have cleveref going
+\renewcommand{\eqref}[1]{\cref{#1}}
+
+% Basic notation
+\newcommand{\set}[1]{\{#1\}}
+\newcommand{\bigset}[1]{\left\{ #1 \right\}}
+\newcommand{\abs}[1]{\left\lvert#1\right\rvert}
+\newcommand{\size}[1]{\left\lvert#1\right\rvert}
+\newcommand{\bigabs}[1]{{\left| {#1} \right|}}
+\newcommand{\paren}[1]{\left(#1\right)}
+\newcommand{\bracket}[1]{\left[#1\right]}
+\newcommand{\bit}[1][]{{\{0,1\}}^{#1}}
+\newcommand{\ceil}[1]{\lceil #1 \rceil}
+\newcommand{\floor}[1]{\lfloor #1 \rfloor}
+\newcommand{\expof}[1]{\exp\left(#1\right)}
+\renewcommand{\bar}{\overline}
+\newcommand{\AND}{\wedge}
+\newcommand{\OR}{\vee}
+\renewcommand{\gets}{\leftarrow}
+\newcommand{\from}{\leftarrow}
+
+% Rarer notations, mainly Knuth
+\newcommand{\riseFact}[1]{{\overline{#1}}}
+\newcommand{\fallFact}[1]{{\underline{#1}}}
+
+% Multiset/Multichoose
+\newcommand\multiset[2]{\ensuremath{\left(\kern-.3em\left(\genfrac{}{}{0pt}{}{#1}{#2}\right)\kern-.3em\right)}}
+
+% \newcommand{\risingFactorial}[2]{#1^{\overline{#2}}}
+% \newcommand{\fallingFactorial}[2]{#1^{\underline{#2}}}
+
+% Notation simplifications
+\newcommand{\eps}{\epsilon}
+\newcommand{\vareps}{\varepsilon}
+\renewcommand{\l}{\ell}
+\newcommand{\recip}[1]{\frac{1}{#1}}
+\newcommand{\half}{\frac{1}{2}}
+\newcommand{\sigmoid}{\sigma}
+% Use the bm package to bold math symbols
+\newcommand{\1}[1]{\bm{1}\left[#1\right]}         % Indicator
+% Highlight a newly defined term
+\newcommand{\newterm}[1]{{\bf #1}}
+
+\DeclareMathOperator{\sgn}{sgn}
+
+% N, Z, Q, I, R, C
+\newcommand{\NN}{\mathbb{N}}
+\newcommand{\ZZ}{\mathbb{Z}}
+\newcommand{\QQ}{\mathbb{Q}}
+\newcommand{\II}{\mathbb{I}}
+\newcommand{\RR}{\mathbb{R}}
+\newcommand{\CC}{\mathbb{C}}
+
+% Other font-y stuff, more mathcal and mathbb
+\newcommand{\calA}{\mathcal{A}}
+\newcommand{\calB}{\mathcal{B}}
+\newcommand{\calC}{\mathcal{C}}
+\newcommand{\calD}{\mathcal{D}}
+\newcommand{\calE}{\mathcal{E}}
+\newcommand{\calF}{\mathcal{F}}
+\newcommand{\calG}{\mathcal{G}}
+\newcommand{\calH}{\mathcal{H}}
+\newcommand{\calI}{\mathcal{I}}
+\newcommand{\calJ}{\mathcal{J}}
+\newcommand{\calK}{\mathcal{K}}
+\newcommand{\calL}{\mathcal{L}}
+\newcommand{\calM}{\mathcal{M}}
+\newcommand{\calN}{\mathcal{N}}
+\newcommand{\calO}{\mathcal{O}}
+\newcommand{\calP}{\mathcal{P}}
+\newcommand{\calQ}{\mathcal{Q}}
+\newcommand{\calR}{\mathcal{R}}
+\newcommand{\calS}{\mathcal{S}}
+\newcommand{\calT}{\mathcal{T}}
+\newcommand{\calU}{\mathcal{U}}
+\newcommand{\calV}{\mathcal{V}}
+\newcommand{\calW}{\mathcal{W}}
+\newcommand{\calX}{\mathcal{X}}
+\newcommand{\calY}{\mathcal{Y}}
+\newcommand{\calZ}{\mathcal{Z}}
+
+
+% Probability and statistics
+\newcommand{\pr}[1]{\operatorname{\mathbb{P}}\left[#1\right]}
+\newcommand{\prOver}[2]{\operatorname*{\mathbb{P}}_{#1}\left[#2\right]}
+\newcommand{\E}[2]{\operatorname*{\mathbb{E}}_{#1}\left[#2\right]}
+\newcommand{\Enoarg}[1]{\operatorname*{\mathbb{E}}_{#1}}
+\newcommand{\Var}[1]{\operatorname{Var}\left[#1\right]}
+\newcommand{\Cov}[1]{\operatorname{Cov}\left[#1\right]}
+\newcommand{\KL}{D_{\mathrm{KL}}}
+
+% Linear algebra
+\newcommand{\inprod}[1]{\langle#1\rangle}
+\newcommand{\inprodF}[1]{\inprod{#1}_{\mathrm{F}}}
+\newcommand{\biginprod}[1]{\left\langle#1\right\rangle}
+\newcommand{\biginprodF}[1]{\biginprod{#1}_{\mathrm{F}}}
+\newcommand{\outprod}{\otimes}
+\newcommand{\realvector}[1]{\RR^{#1}}
+\newcommand{\realmatrix}[2]{\RR^{#1\times#2}}
+\newcommand{\grad}{\nabla}      % map \grad to be \nabla
+%
+% Fonts for vectors, matrices, and tensors
+%
+% Vectors
+\newcommand{\vectorify}[1]{\bm{\mathrm{#1}}}
+\newcommand{\vzero}{\vectorify{0}}
+\newcommand{\vone}{\vectorify{1}}
+\newcommand{\veca}{\vectorify{a}}
+\newcommand{\vecb}{\vectorify{b}}
+\newcommand{\vecc}{\vectorify{c}}
+\newcommand{\vecd}{\vectorify{d}}
+\newcommand{\vece}{\vectorify{e}}
+\newcommand{\vecf}{\vectorify{f}}
+\newcommand{\vecg}{\vectorify{g}}
+\newcommand{\vech}{\vectorify{h}}
+% These are more often used as indices
+% \newcommand{\veci}{\vectorify{i}}
+% \newcommand{\vecj}{\vectorify{j}}
+% \newcommand{\veck}{\vectorify{k}}
+\newcommand{\vecl}{\vectorify{l}}
+\newcommand{\vecm}{\vectorify{m}}
+\newcommand{\vecn}{\vectorify{n}}
+\newcommand{\veco}{\vectorify{o}}
+\newcommand{\vecp}{\vectorify{p}}
+\newcommand{\vecq}{\vectorify{q}}
+\newcommand{\vecr}{\vectorify{r}}
+\newcommand{\vecs}{\vectorify{s}}
+\newcommand{\vect}{\vectorify{t}}
+\newcommand{\vecu}{\vectorify{u}}
+\newcommand{\vecv}{\vectorify{v}}
+\newcommand{\vecw}{\vectorify{w}}
+\newcommand{\vecx}{\vectorify{x}}
+\newcommand{\vecy}{\vectorify{y}}
+\newcommand{\vecz}{\vectorify{z}}
+
+% Matrices
+\newcommand{\matrixify}[1]{\bm{\mathrm{#1}}}
+\newcommand{\mIden}[1][]{\matrixify{I_{#1}}}
+\newcommand{\mZero}[1][]{\matrixify{0}}
+\newcommand{\mSigma}[1][]{\matrixify{\Sigma}}
+\newcommand{\mLambda}[1][]{\matrixify{\Lambda}}
+\newcommand{\diag}[1]{\operatorname{diag}\left({#1}\right)}
+\newcommand{\diagvec}[1]{\matrixify{D}_\vectorify{#1}}
+\newcommand{\tran}{^{\mathrm{T}}}
+
+\newcommand{\mA}{\matrixify{A}}
+\newcommand{\mB}{\matrixify{B}}
+\newcommand{\mC}{\matrixify{C}}
+\newcommand{\mD}{\matrixify{D}}
+\newcommand{\mE}{\matrixify{E}}
+\newcommand{\mF}{\matrixify{F}}
+\newcommand{\mG}{\matrixify{G}}
+\newcommand{\mH}{\matrixify{H}}
+\newcommand{\mJ}{\matrixify{J}}
+\newcommand{\mK}{\matrixify{K}}
+\newcommand{\mL}{\matrixify{L}}
+\newcommand{\mM}{\matrixify{M}}
+\newcommand{\mN}{\matrixify{N}}
+\newcommand{\mO}{\matrixify{O}}
+\newcommand{\mP}{\matrixify{P}}
+\newcommand{\mQ}{\matrixify{Q}}
+\newcommand{\mR}{\matrixify{R}}
+\newcommand{\mS}{\matrixify{S}}
+\newcommand{\mT}{\matrixify{T}}
+\newcommand{\mU}{\matrixify{U}}
+\newcommand{\mV}{\matrixify{V}}
+\newcommand{\mW}{\matrixify{W}}
+\newcommand{\mX}{\matrixify{X}}
+\newcommand{\mY}{\matrixify{Y}}
+\newcommand{\mZ}{\matrixify{Z}}
+% Tensor
+\DeclareMathAlphabet{\mathsfit}{\encodingdefault}{\sfdefault}{m}{sl}
+\SetMathAlphabet{\mathsfit}{bold}{\encodingdefault}{\sfdefault}{bx}{n}
+\newcommand{\tens}[1]{\bm{\mathsfit{#1}}}
+\newcommand{\tA}{\tens{A}}
+\newcommand{\tB}{\tens{B}}
+\newcommand{\tC}{\tens{C}}
+\newcommand{\tD}{\tens{D}}
+\newcommand{\tE}{\tens{E}}
+\newcommand{\tF}{\tens{F}}
+\newcommand{\tG}{\tens{G}}
+\newcommand{\tH}{\tens{H}}
+\newcommand{\tI}{\tens{I}}
+\newcommand{\tJ}{\tens{J}}
+\newcommand{\tK}{\tens{K}}
+\newcommand{\tL}{\tens{L}}
+\newcommand{\tM}{\tens{M}}
+\newcommand{\tN}{\tens{N}}
+\newcommand{\tO}{\tens{O}}
+\newcommand{\tP}{\tens{P}}
+\newcommand{\tQ}{\tens{Q}}
+\newcommand{\tR}{\tens{R}}
+\newcommand{\tS}{\tens{S}}
+\newcommand{\tT}{\tens{T}}
+\newcommand{\tU}{\tens{U}}
+\newcommand{\tV}{\tens{V}}
+\newcommand{\tW}{\tens{W}}
+\newcommand{\tX}{\tens{X}}
+\newcommand{\tY}{\tens{Y}}
+\newcommand{\tZ}{\tens{Z}}
+% % Sets
+\newcommand{\sA}{{{\mathbb{A}}}}
+\newcommand{\sB}{{{\mathbb{B}}}}
+\newcommand{\sC}{{{\mathbb{C}}}}
+\newcommand{\sD}{{{\mathbb{D}}}}
+% % Don't use a set called E, because this would be the same as our symbol
+% % for expectation.
+\newcommand{\sF}{{{\mathbb{F}}}}
+\newcommand{\sG}{{{\mathbb{G}}}}
+\newcommand{\sH}{{{\mathbb{H}}}}
+\newcommand{\sI}{{{\mathbb{I}}}}
+\newcommand{\sJ}{{{\mathbb{J}}}}
+\newcommand{\sK}{{{\mathbb{K}}}}
+\newcommand{\sL}{{{\mathbb{L}}}}
+\newcommand{\sM}{{{\mathbb{M}}}}
+\newcommand{\sN}{{{\mathbb{N}}}}
+\newcommand{\sO}{{{\mathbb{O}}}}
+\newcommand{\sP}{{{\mathbb{P}}}}
+\newcommand{\sQ}{{{\mathbb{Q}}}}
+\newcommand{\sR}{{{\mathbb{R}}}}
+\newcommand{\sS}{{{\mathbb{S}}}}
+\newcommand{\sT}{{{\mathbb{T}}}}
+\newcommand{\sU}{{{\mathbb{U}}}}
+\newcommand{\sV}{{{\mathbb{V}}}}
+\newcommand{\sW}{{{\mathbb{W}}}}
+\newcommand{\sX}{{{\mathbb{X}}}}
+\newcommand{\sY}{{{\mathbb{Y}}}}
+\newcommand{\sZ}{{{\mathbb{Z}}}}
+
+% Norms
+% vectors
+\newcommand{\norm}[2][]{\left\|#2\right\|_{#1}}
+\newcommand{\normsq}[2][]{\left\|#2\right\|_{#1}^2}
+\newcommand{\lone}[1]{\norm[1]{#1}}
+\newcommand{\ltwo}[1]{\norm[2]{#1}}
+\newcommand{\lp}[1]{\norm[p]{#1}}
+\newcommand{\linf}[1]{\norm[\infty]{#1}}
+\newcommand{\lonesq}[1]{\lone{#1}^2}
+\newcommand{\ltwosq}[1]{\ltwo{#1}^2}
+% matrices
+\newcommand{\frobeniusnorm}[1]{\norm[\mathrm{F}]{#1}}
+\newcommand{\operatornorm}[1]{\norm[op]{#1}}
+\newcommand{\nuclearnorm}[1]{\norm[\star]{#1}}
+\newcommand{\frobeniusnormsq}[1]{\frobeniusnorm{#1}^2}
+\newcommand{\operatornormsq}[1]{\operatornorm{#1}^2}
+\newcommand{\nuclearnormsq}[1]{\nuclearnorm{#1}^2}
+% Some matrix operators
+\newcommand{\tr}[1]{\operatorname{tr}(#1)}
+\newcommand{\bigtr}[1]{\operatorname{tr}\left(#1\right)}
+\newcommand{\rank}[1]{\operatorname{rank}\left(#1\right)}
+% The following two, det and dim are already defined, but without the input
+\renewcommand{\det}[1]{\operatorname{det}\left(#1\right)}
+\renewcommand{\dim}[1]{\operatorname{dim}\left(#1\right)}
+\newcommand{\image}[1]{\operatorname{Im}\left(#1\right)}
+
+% Optimization related operators
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+% \newcommand{\argmax}{\mathsf{argmax \;}}
+% \newcommand{\argmin}{\mathsf{argmin \;}}
+
+%
+
+
+
+
+%
+%
+% Complexity and NP completeness related
+%
+\newcommand{\poly}{\mathsf{poly}}
+
+% NPC
+\newcommand{\np}{NP}
+\newcommand{\NP}{\np}
+\newcommand{\polyClass}{P}
+\newcommand{\PolyClass}{\polyClass}
+\newcommand{\npc}{\np-\textrm{Complete}}
+\newcommand{\NPC}{\npc}
+\newcommand{\npcness}{\npc{}\textrm{ness}}
+% Rarer
+\newcommand{\PH}{PH}
+\newcommand{\BPP}{BPP}
+\newcommand{\ZP}{ZP}
+\newcommand{\RP}{RP}
+
+
+
+
+% Remnants of originals that aren't useful yet, but aren't definitely useless either
+% Bunch of things copied from:
+% 1. Ravi's mathcommands.tex (in Amazon's useless files folder)
+% 2. Our preamble from Amazon's paper.
+% 3. [Picked clean and removed] Huy's course lec11 compression sensing scribe notes.
+% 4. [Picked clean and removed] Daniel's crypto preamble initial packages as well
+%
+% All of those remainig are commented out using a iffalse.
+%
+% \iffalse
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% % Ravi's mathcommands.tex (in Amazon's useless files folder)
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% %%%%% NEW MATH DEFINITIONS %%%%%
+% \newcommand{\train}{\mathcal{D}}
+% \newcommand{\valid}{\mathcal{D_{\mathrm{valid}}}}
+% \newcommand{\test}{\mathcal{D_{\mathrm{test}}}}
+
+% % Random variables
+% \def\reta{{\textnormal{$\eta$}}}
+% \def\ra{{\textnormal{a}}}
+% \def\rb{{\textnormal{b}}}
+% \def\rc{{\textnormal{c}}}
+% \def\rd{{\textnormal{d}}}
+% \def\re{{\textnormal{e}}}
+% \def\rf{{\textnormal{f}}}
+% \def\rg{{\textnormal{g}}}
+% \def\rh{{\textnormal{h}}}
+% \def\ri{{\textnormal{i}}}
+% \def\rj{{\textnormal{j}}}
+% \def\rk{{\textnormal{k}}}
+% \def\rl{{\textnormal{l}}}
+% % rm is already a command, just don't name any random variables m
+% \def\rn{{\textnormal{n}}}
+% \def\ro{{\textnormal{o}}}
+% \def\rp{{\textnormal{p}}}
+% \def\rq{{\textnormal{q}}}
+% \def\rr{{\textnormal{r}}}
+% \def\rs{{\textnormal{s}}}
+% \def\rt{{\textnormal{t}}}
+% \def\ru{{\textnormal{u}}}
+% \def\rv{{\textnormal{v}}}
+% \def\rw{{\textnormal{w}}}
+% \def\rx{{\textnormal{x}}}
+% \def\ry{{\textnormal{y}}}
+% \def\rz{{\textnormal{z}}}
+
+% % Random vectors
+% \def\rvepsilon{{\mathbf{\epsilon}}}
+% \def\rvtheta{{\mathbf{\theta}}}
+% \def\rva{{\mathbf{a}}}
+% \def\rvb{{\mathbf{b}}}
+% \def\rvc{{\mathbf{c}}}
+% \def\rvd{{\mathbf{d}}}
+% \def\rve{{\mathbf{e}}}
+% \def\rvf{{\mathbf{f}}}
+% \def\rvg{{\mathbf{g}}}
+% \def\rvh{{\mathbf{h}}}
+% \def\rvu{{\mathbf{i}}}
+% \def\rvj{{\mathbf{j}}}
+% \def\rvk{{\mathbf{k}}}
+% \def\rvl{{\mathbf{l}}}
+% \def\rvm{{\mathbf{m}}}
+% \def\rvn{{\mathbf{n}}}
+% \def\rvo{{\mathbf{o}}}
+% \def\rvp{{\mathbf{p}}}
+% \def\rvq{{\mathbf{q}}}
+% \def\rvr{{\mathbf{r}}}
+% \def\rvs{{\mathbf{s}}}
+% \def\rvt{{\mathbf{t}}}
+% \def\rvu{{\mathbf{u}}}
+% \def\rvv{{\mathbf{v}}}
+% \def\rvw{{\mathbf{w}}}
+% \def\rvx{{\mathbf{x}}}
+% \def\rvy{{\mathbf{y}}}
+% \def\rvz{{\mathbf{z}}}
+
+% % Elements of random vectors
+% \def\erva{{\textnormal{a}}}
+% \def\ervb{{\textnormal{b}}}
+% \def\ervc{{\textnormal{c}}}
+% \def\ervd{{\textnormal{d}}}
+% \def\erve{{\textnormal{e}}}
+% \def\ervf{{\textnormal{f}}}
+% \def\ervg{{\textnormal{g}}}
+% \def\ervh{{\textnormal{h}}}
+% \def\ervi{{\textnormal{i}}}
+% \def\ervj{{\textnormal{j}}}
+% \def\ervk{{\textnormal{k}}}
+% \def\ervl{{\textnormal{l}}}
+% \def\ervm{{\textnormal{m}}}
+% \def\ervn{{\textnormal{n}}}
+% \def\ervo{{\textnormal{o}}}
+% \def\ervp{{\textnormal{p}}}
+% \def\ervq{{\textnormal{q}}}
+% \def\ervr{{\textnormal{r}}}
+% \def\ervs{{\textnormal{s}}}
+% \def\ervt{{\textnormal{t}}}
+% \def\ervu{{\textnormal{u}}}
+% \def\ervv{{\textnormal{v}}}
+% \def\ervw{{\textnormal{w}}}
+% \def\ervx{{\textnormal{x}}}
+% \def\ervy{{\textnormal{y}}}
+% \def\ervz{{\textnormal{z}}}
+
+% % Random matrices
+% \def\rmA{{\mathbf{A}}}
+% \def\rmB{{\mathbf{B}}}
+% \def\rmC{{\mathbf{C}}}
+% \def\rmD{{\mathbf{D}}}
+% \def\rmE{{\mathbf{E}}}
+% \def\rmF{{\mathbf{F}}}
+% \def\rmG{{\mathbf{G}}}
+% \def\rmH{{\mathbf{H}}}
+% \def\rmI{{\mathbf{I}}}
+% \def\rmJ{{\mathbf{J}}}
+% \def\rmK{{\mathbf{K}}}
+% \def\rmL{{\mathbf{L}}}
+% \def\rmM{{\mathbf{M}}}
+% \def\rmN{{\mathbf{N}}}
+% \def\rmO{{\mathbf{O}}}
+% \def\rmP{{\mathbf{P}}}
+% \def\rmQ{{\mathbf{Q}}}
+% \def\rmR{{\mathbf{R}}}
+% \def\rmS{{\mathbf{S}}}
+% \def\rmT{{\mathbf{T}}}
+% \def\rmU{{\mathbf{U}}}
+% \def\rmV{{\mathbf{V}}}
+% \def\rmW{{\mathbf{W}}}
+% \def\rmX{{\mathbf{X}}}
+% \def\rmY{{\mathbf{Y}}}
+% \def\rmZ{{\mathbf{Z}}}
+
+% % Elements of random matrices
+% \def\ermA{{\textnormal{A}}}
+% \def\ermB{{\textnormal{B}}}
+% \def\ermC{{\textnormal{C}}}
+% \def\ermD{{\textnormal{D}}}
+% \def\ermE{{\textnormal{E}}}
+% \def\ermF{{\textnormal{F}}}
+% \def\ermG{{\textnormal{G}}}
+% \def\ermH{{\textnormal{H}}}
+% \def\ermI{{\textnormal{I}}}
+% \def\ermJ{{\textnormal{J}}}
+% \def\ermK{{\textnormal{K}}}
+% \def\ermL{{\textnormal{L}}}
+% \def\ermM{{\textnormal{M}}}
+% \def\ermN{{\textnormal{N}}}
+% \def\ermO{{\textnormal{O}}}
+% \def\ermP{{\textnormal{P}}}
+% \def\ermQ{{\textnormal{Q}}}
+% \def\ermR{{\textnormal{R}}}
+% \def\ermS{{\textnormal{S}}}
+% \def\ermT{{\textnormal{T}}}
+% \def\ermU{{\textnormal{U}}}
+% \def\ermV{{\textnormal{V}}}
+% \def\ermW{{\textnormal{W}}}
+% \def\ermX{{\textnormal{X}}}
+% \def\ermY{{\textnormal{Y}}}
+% \def\ermZ{{\textnormal{Z}}}
+
+% % Elements of vectors
+% \def\evalpha{{\alpha}}
+% \def\evbeta{{\beta}}
+% \def\evepsilon{{\epsilon}}
+% \def\evlambda{{\lambda}}
+% \def\evomega{{\omega}}
+% \def\evmu{{\mu}}
+% \def\evpsi{{\psi}}
+% \def\evsigma{{\sigma}}
+% \def\evtheta{{\theta}}
+% \def\eva{{a}}
+% \def\evb{{b}}
+% \def\evc{{c}}
+% \def\evd{{d}}
+% \def\eve{{e}}
+% \def\evf{{f}}
+% \def\evg{{g}}
+% \def\evh{{h}}
+% \def\evi{{i}}
+% \def\evj{{j}}
+% \def\evk{{k}}
+% \def\evl{{l}}
+% \def\evm{{m}}
+% \def\evn{{n}}
+% \def\evo{{o}}
+% \def\evp{{p}}
+% \def\evq{{q}}
+% \def\evr{{r}}
+% \def\evs{{s}}
+% \def\evt{{t}}
+% \def\evu{{u}}
+% \def\evv{{v}}
+% \def\evw{{w}}
+% \def\evx{{x}}
+% \def\evy{{y}}
+% \def\evz{{z}}
+
+% % Graph
+% \def\gA{{\mathcal{A}}}
+% \def\gB{{\mathcal{B}}}
+% \def\gC{{\mathcal{C}}}
+% \def\gD{{\mathcal{D}}}
+% \def\gE{{\mathcal{E}}}
+% \def\gF{{\mathcal{F}}}
+% \def\gG{{\mathcal{G}}}
+% \def\gH{{\mathcal{H}}}
+% \def\gI{{\mathcal{I}}}
+% \def\gJ{{\mathcal{J}}}
+% \def\gK{{\mathcal{K}}}
+% \def\gL{{\mathcal{L}}}
+% \def\gM{{\mathcal{M}}}
+% \def\gN{{\mathcal{N}}}
+% \def\gO{{\mathcal{O}}}
+% \def\gP{{\mathcal{P}}}
+% \def\gQ{{\mathcal{Q}}}
+% \def\gR{{\mathcal{R}}}
+% \def\gS{{\mathcal{S}}}
+% \def\gT{{\mathcal{T}}}
+% \def\gU{{\mathcal{U}}}
+% \def\gV{{\mathcal{V}}}
+% \def\gW{{\mathcal{W}}}
+% \def\gX{{\mathcal{X}}}
+% \def\gY{{\mathcal{Y}}}
+% \def\gZ{{\mathcal{Z}}}
+
+
+% % Entries of a matrix
+% \def\emLambda{{\Lambda}}
+% \def\emA{{A}}
+% \def\emB{{B}}
+% \def\emC{{C}}
+% \def\emD{{D}}
+% \def\emE{{E}}
+% \def\emF{{F}}
+% \def\emG{{G}}
+% \def\emH{{H}}
+% \def\emI{{I}}
+% \def\emJ{{J}}
+% \def\emK{{K}}
+% \def\emL{{L}}
+% \def\emM{{M}}
+% \def\emN{{N}}
+% \def\emO{{O}}
+% \def\emP{{P}}
+% \def\emQ{{Q}}
+% \def\emR{{R}}
+% \def\emS{{S}}
+% \def\emT{{T}}
+% \def\emU{{U}}
+% \def\emV{{V}}
+% \def\emW{{W}}
+% \def\emX{{X}}
+% \def\emY{{Y}}
+% \def\emZ{{Z}}
+% \def\emSigma{{\Sigma}}
+
+% % entries of a tensor
+% % Same font as tensor, without \bm wrapper
+% \newcommand{\etens}[1]{\mathsfit{#1}}
+% \def\etLambda{{\etens{\Lambda}}}
+% \def\etA{{\etens{A}}}
+% \def\etB{{\etens{B}}}
+% \def\etC{{\etens{C}}}
+% \def\etD{{\etens{D}}}
+% \def\etE{{\etens{E}}}
+% \def\etF{{\etens{F}}}
+% \def\etG{{\etens{G}}}
+% \def\etH{{\etens{H}}}
+% \def\etI{{\etens{I}}}
+% \def\etJ{{\etens{J}}}
+% \def\etK{{\etens{K}}}
+% \def\etL{{\etens{L}}}
+% \def\etM{{\etens{M}}}
+% \def\etN{{\etens{N}}}
+% \def\etO{{\etens{O}}}
+% \def\etP{{\etens{P}}}
+% \def\etQ{{\etens{Q}}}
+% \def\etR{{\etens{R}}}
+% \def\etS{{\etens{S}}}
+% \def\etT{{\etens{T}}}
+% \def\etU{{\etens{U}}}
+% \def\etV{{\etens{V}}}
+% \def\etW{{\etens{W}}}
+% \def\etX{{\etens{X}}}
+% \def\etY{{\etens{Y}}}
+% \def\etZ{{\etens{Z}}}
+
+% \DeclareMathOperator*{\argmax}{arg\,max}
+% \DeclareMathOperator*{\argmin}{arg\,min}
+
+% \DeclareMathOperator{\sign}{sign}
+% \DeclareMathOperator{\Tr}{Tr}
+% \let\ab\allowbreak
+
+
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% % Our preamble from Amazon's paper.
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% \newcommand{\argmax}{\mathsf{argmax \;}}
+% \newcommand{\argmin}{\mathsf{argmin \;}}
+
+% % \RequirePackage{chngcntr, apptools}
+% \AtAppendix{\counterwithin{lemma}{section}}
+% \AtAppendix{\counterwithin{theorem}{section}}
+% \AtAppendix{\counterwithin{corollary}{section}}
+% \fi
