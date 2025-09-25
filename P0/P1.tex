@@ -1,0 +1,320 @@
+\documentclass[11pt, a4paper]{article}
+
+% One of the following is required: problemset, recitation, quiz, exam
+% The following are required: handoutnum, assigneddate.
+% If there is only one date, set both duedate and assigneddate to be the same.
+% Do not change handoutnum or dates
+\usepackage[
+problemset,
+handoutnum=1,
+assigneddate={10 September 2025},duedate={22 September 2025},
+% % Uncomment the line below IF these are solutions
+%% solution,
+% % Uncomment the line below IF you are a student submitting solutions
+% student,
+% % Replace with your name
+name={Vignesh Saravanakumar},
+% Replace with names of all group members who collarborated on this.
+% If unsure about ordering, then you can follow the convention in theory
+% and list names alphabetically by last name.
+groupmembers={Fill collaborators' names},
+math-preamble
+]{course-handouts}
+
+% Be careful of commas and put text with spaces within {curly braces}
+% Don't use a comma at the end, but do use commas between options.
+% Weird errors occur otherwise, I wasted some time failing to debug those.
+% DO NOT EDIT
+% These are fixed values that should not be changed during this course.
+\pgfkeys{/course-handouts/.cd,
+instructorname = {Akshar Varma},
+coursename = {CS3000 Algorithms}}
+
+% Add any macros you want below, or put them in a separate file and \input{file}
+% keeping the preamble clean can keep you sane.
+
+\begin{document}
+% Do not change either of the below lines.
+\insertHandoutInfoBox{}
+% \ifbool{isexam}{\input{exam-blurb}} %comment this line only if it throws an error.
+
+% Start adding content from below here.
+
+
+\newproblem{Asymptotics}{16+9}
+
+\begin{enumerate}
+    \item
+      Return a list of the following functions separated by the symbol $\equiv$ or
+      $\ll$, where $f\equiv g$ means $f=\Theta(g)$ and $f\ll g$ means
+      $f=O(g)$. For example, if
+      the functions are $\log n,n,5n,2^{n}$ a correct answer is $\log n\ll n\equiv5n\ll2^{n}$.
+      All logarithms are in base $2$. Prove each relation formally. For the example, you'll need to formally prove that $\log n\ll n$, $n\equiv5n$, and $5n\ll2^{n}$.
+      \begin{enumerate}
+        \begin{multicols}{2}
+        \item $1/n$
+        \item $n\log n$
+        \item $\log n!$
+        \item $n^{1/\log n}$
+        \item $\log^{2}n$
+        \item $\log^{2}(n\log n)$
+        \end{multicols}
+      \end{enumerate}
+    
+    \end{enumerate}
+    
+      \fbox{\parbox{\textwidth}{
+        \raggedright \textbf{Answer:} For each we must show that $\lim_{n \to \infty} \frac{f(n)}{g(n)} < c$, $\lim_{n \to \infty} \frac{f(n)}{g(n)} = c$ or $\lim_{n \to \infty} \frac{f(n)}{g(n)} > c$ for $f \ll g$, $f \equiv g$ and $g \ll f$ respectively.
+        \begin{enumerate}
+            \item For now we start with $f(n)=\frac{1}{n}$ and $g(n)=n\log{n}$. Then $\lim_{n \to \infty} \frac{f(n)}{g(n)} = \lim_{n \to \infty} \frac{1/n}{n\log{n}} = \lim_{n \to \infty} \frac{1}{n^2\log{n}} =  0$ which shows that $\frac{1}{n} \ll n\log{n}$
+            \item Next we do the same with $f(n)=(\log{n})^2$ and $g(n)=\frac{1}{n}$ or $g(n)=n\log{n}$. We get that:
+                \begin{enumerate}
+                    \item $\lim_{n \to \infty} \frac{(\log{n})^2}{\frac{1}{n}} = \lim_{n \to \infty} n(\log{n})^2 = \infty$
+                    \item $\lim_{n \to \infty} \frac{(\log{n})^2}{n\log{n}} = \lim_{n \to \infty} \frac{\log{n}}{n} = 0$
+                \end{enumerate}
+                which shows that  $\frac{1}{n} \ll (\log n)^2 \ll n\log n$
+            \item Next we do the same with $f(n)=(\log{(n\log{n})})^2$ and $g(n)=(\log{n})^2$. We get that:
+                \begin{enumerate}
+                    \item $\lim_{n \to \infty} \frac{(\log{(n\log{n})})^2}{(\log{n})^2} = \lim_{n \to \infty} \frac{(\log{n} + \log{(\log{n})})^2}{(\log{n})^2} = \lim_{n \to \infty} \left(1 + \frac{\log{(\log{n})}}{\log{n}}\right)^2 = 1$
+                \end{enumerate}
+                which shows that $\frac{1}{n} \ll (\log{(n\log{n})})^2 \equiv (\log n)^2 \ll n\log n$
+            \item Next we do the same with $f(n)=n^{1/\log{n}}$ and $g(n)=\frac{1}{n}$ or $g(n)=(\log{n})^2$. Note that $n^{1/\log n} = 2^{\log n \cdot \frac{1}{\log n}} = 2^1 = 2$. We get that: 
+                \begin{enumerate} 
+                    \item $\lim_{n \to \infty} \frac{n^{1/\log{n}}}{\frac{1}{n}} = \lim_{n \to \infty} \frac{2}{\frac{1}{n}} = \lim_{n \to \infty} 2n = \infty$ 
+                    \item $\lim_{n \to \infty} \frac{n^{1/\log{n}}}{(\log{n})^2} = \lim_{n \to \infty} \frac{2}{(\log{n})^2} = 0$ 
+                \end{enumerate} 
+                which shows, to great surprise, that $\frac{1}{n} \ll n^{1/\log n} \ll (\log{(n\log{n})})^2 \equiv (\log n)^2 \ll n\log n$
+            \item Next we do the same with $f(n)=\log n!$ and $g(n)=(\log{n})^2$ or $g(n)=n\log{n}$. Note that $\log(n!) = \log(1) + \log(2) + \dots + \log(n-1) + \log(n) \leq \log(n) + \log(n) + \dots + \log(n) = n\log n$. Also, $\log(n!) \geq \log(\frac{n}{2}) + \log(\frac{n}{2}+1) + \dots + \log(n) \geq \frac{n}{2}\log(\frac{n}{2}) = \frac{n}{2}(\log n - 1)$. We get that:
+                \begin{enumerate}
+                    \item $\lim_{n \to \infty} \frac{\log n!}{(\log{n})^2} \geq \lim_{n \to \infty} \frac{\frac{n}{2}(\log n - 1)}{(\log{n})^2} = \lim_{n \to \infty} \frac{n(\log n - 1)}{2(\log{n})^2} = \infty$
+                    \item $\lim_{n \to \infty} \frac{\log n!}{n\log{n}} \leq \lim_{n \to \infty} \frac{n\log n}{n\log{n}} = 1$ and $\lim_{n \to \infty} \frac{\log n!}{n\log{n}} \geq \lim_{n \to \infty} \frac{\frac{n}{2}(\log n - 1)}{n\log{n}} = \frac{1}{2}$
+                \end{enumerate}
+                which shows that $\frac{1}{n} \ll n^{1/\log n} \ll (\log{n})^2 \equiv (\log{(n\log{n})})^2 \ll \log n! \equiv n\log n$
+                $$\frac{1}{n} \ll n^{1/\log n} \ll (\log{n})^2 \equiv (\log{(n\log{n})})^2 \ll \log n! \equiv n\log n$$
+        \end{enumerate}
+        }}
+    \begin{enumerate}[resume] 
+  
+    \item For some given functions, $f,g,h$, decide which of the following statements is correct and give a formal proof. If a statement is incorrect, provide an counterexample (specific choices for $f, g, h$) which proves the statement incorrect.
+      \begin{enumerate}
+      \item If $f(n) = O(g(n))$, then $f(n) = O(\log g(n))$
+      \item
+        If $f(n) = \Theta (g(n))$, then $(f(n)^2) = \Theta (g(n)^3)$
+      \item If $f(n) = \Omega(n*g(n))$, $g(n) = \Omega(n*h(n))$, then $f(n) = \Omega (n^2*h(n))$
+      \end{enumerate}
+    
+    \end{enumerate}
+
+    
+     \fbox{\parbox{\textwidth}{
+        \begin{enumerate}[label=\alph*.]
+             \item Let $f(n) = n$, $g(n) = n^2$ which satisfies $f(n) = O(g(n))$ as $\lim_{n \to \infty} \frac{f(n)}{g(n)} = \lim_{n \to \infty} \frac{n}{n^2} = 0$ but $\lim_{n \to \infty} \frac{f(n)}{\log{g(n)}} = \lim_{n \to \infty} \frac{n}{\log{n^2}} = \lim_{n \to \infty} \frac{n}{2\log{n}} = \infty$. Therefore by counterexample we have shown that the conditional does not hold. 
+            \item Let $f(n) = n$, $g(n) = 2n$ which satisfies $f(n) = \Theta(g(n))$ as $\lim_{n \to \infty} \frac{n}{2n} = \lim_{n \to \infty} \frac{1}{2} = \frac{1}{2}$ but $\lim_{n \to \infty} \frac{f(n)^2}{g(n)^3} = \lim_{n \to \infty} \frac{n^2}{(2n)^3} = \lim_{n \to \infty} \frac{n^2}{8n^3} = \lim_{n \to \infty} \frac{1}{8n} = 0$. Therefore by counterexample we have shown that the conditional does not hold. 
+            \item Since $f(n) = \Omega(n \cdot g(n))$, assume $\exists k_1 > 0$ and $n_0$ such that $\forall n > n_0$: $f(n) \geq k_1 \cdot n \cdot g(n)$. Since $g(n) = \Omega(n \cdot h(n))$, assume $\exists k_2 > 0$ and $n_1$ such that $\forall n > n_1$: $g(n) \geq k_2 \cdot n \cdot h(n)$. We must prove that $\exists k_3 > 0$, $n_2$ such that $\forall n > n_2$: $f(n) \geq k_3 \cdot n^2 \cdot h(n)$. For $n > \max(n_0, n_1)$, we have: $$f(n) \geq k_1 \cdot n \cdot g(n) \geq k_1 \cdot n \cdot (k_2 \cdot n \cdot h(n)) = k_1 \cdot k_2 \cdot n^2 \cdot h(n)$$ Therefore, setting $k_3 = k_1 \cdot k_2$ and $n_2 = \max(n_0, n_1)$, we have shown that $f(n) = \Omega(n^2 \cdot h(n))$, so the statement is true using an existence proof. 
+        \end{enumerate}
+     }}
+     
+
+\newproblem{Asymptotics}{20}
+
+Arrange the following functions in ascending order of growth rate. Also give reasoning but not a formal proof for the order by simplifying the functions into easily compared forms. You can directly assume that $1 \ll \log^a n \ll n^b \ll c^n \ll n^n$ is a fact and do not need to prove that.
+\begin{align*}
+  g_{01}(n)&= n^{\frac{101}{100}} \hskip0.2\textwidth&& g_{02}(n)= n 2^{n+1}\\
+  g_{03}(n)&= n (\log n)^{3} \hskip0.2\textwidth&& g_{04}(n)=n^ {\log n} \\
+  g_{05}(n)&= \log (n^{2n}) \hskip0.2\textwidth&& g_{06}(n)=n!\\
+  g_{07}(n)&=2^{\sqrt{\log n}} \hskip0.2\textwidth&& g_{08}(n)= 2^{2^{n+1}} \\
+  g_{09}(n)&=\log (n!)  \hskip0.2\textwidth&& g_{10}(n)=2^{\log \log n}\\
+  g_{11}(n)&= 2^{\log \sqrt n} \hskip0.2\textwidth&& g_{12}(n)= \sqrt{2}^{\log n}
+\end{align*}
+
+\hint{It is often useful to rewrite $n$ as $a^{\log_a n}$ so that the base in an exponentiation is some constant that we like and not a function of $n$.}\\
+\fbox{\parbox{\textwidth}{
+   \begin{enumerate}
+        \item $g_{01}(n) = n^{\frac{101}{100}} = n^{1.01}$
+        
+        \item $g_{02}(n) = n \cdot 2^{n+1} = n \cdot 2 \cdot 2^n = 2n \cdot 2^n$
+        
+        \item $g_{03}(n) = n(\log n)^3$ 
+        
+        \item $g_{04}(n) = n^{\log n} = (2^{\log n})^{\log n} = 2^{(\log n)(\log n)} = 2^{(\log n)^2}$
+        
+        \item $g_{05}(n) = \log(n^{2n}) = 2n \cdot \log n$
+        
+        \item $g_{06}(n) = n!$
+        
+        \item $g_{07}(n) = 2^{\sqrt{\log n}}$ 
+        
+        \item $g_{08}(n) = 2^{2^{n+1}} = 2^{2 \cdot 2^n}$
+        
+        \item $g_{09}(n)$: $\frac{n}{2}\log\left(\frac{n}{2}\right) < \log(n!) = \sum_{i=1}^{n}\log i < n\log n$ as shown in question 1 part 1
+        
+        \item $g_{10}(n) = 2^{\log \log n} = \log n$ (since $a^{\log_a x} = x$)
+        
+        \item $g_{11}(n) = 2^{\log \sqrt{n}} = 2^{\log n^{1/2}} = 2^{\frac{1}{2}\log n} = (2^{\log n})^{1/2} = n^{1/2} = \sqrt{n}$
+        
+        \item $g_{12}(n) = \sqrt{2}^{\log n} = (2^{1/2})^{\log n} = 2^{\frac{1}{2}\log n} = (2^{\log n})^{1/2} = n^{1/2} = \sqrt{n}$
+        \end{enumerate}
+        \textbf{Answer: } $g_{10}(n) \ll g_{07}(n) \ll g_{11}(n) \equiv g_{12}(n) \ll g_{01}(n) \ll g_{03}(n) \ll g_{09}(n) \equiv g_{05}(n) \ll g_{04}(n) \ll g_{02}(n) \ll g_{06}(n) \ll g_{08}(n)$. We have ordered the functions by growth rate starting with sub-polynomial functions ($\log n$, $2^{\sqrt{\log n}}$, $\sqrt{n}$), then polynomials ($n^{1.01}$), followed by $n$ times logarithmic terms ($n(\log n)^3$, $n\log n$), functions that grow faster than polynomial ($n^{\log n}$ simplified using the hint to rewrite $n = 2^{\log n}$), exponential ($2n \cdot 2^n$), factorial, and finally double exponential ($2^{2 \cdot 2^n}$). The hint was particularly useful for $g_{04}$, $g_{10}$, $g_{11}$, and $g_{12}$ where rewriting $n = 2^{\log n}$ allowed us to manipulate exponents and identify their true growth rates. 
+}}
+
+
+\newproblem{$k$-way merge}{16}
+
+You are given $k$ arrays, each containing $n$ elements in sorted order. You need to merge all the $n \cdot k$ elements into a single sorted array. Suppose that comparison is an $O(1)$ time operation. You need to analyze the running time for the various merging approaches described below.
+\begin{enumerate}[label=\alph*.]
+    \item (Direct $k$-way merge) Suppose at each step you compare the first element of each of the $k$ arrays and insert the minimum of these into the output array. What is the time complexity of this procedure?
+    \item (Sorting) What would be the time complexity if you concatenated all the elements into the output array and then sorted the whole output array using an optimal algorithm like mergesort?
+    \item (Divide-and-Conquer) What if you merge the arrays in groups of 2, doing the standard merge operation on each pair of arrays. So after each stage, you would halve the number of arrays and double the number of elements in any given array. Continue this grouping and merging until you are left with a single array of size $n*k$. What would be the time complexity of this procedure? You should provide a recurrence for the runtime of your algorithm and solve it to determine the time complexity.
+  \item (Using a MinHeap) Suppose you have access to a MinHeap of size $k$. A MinHeap is a data structure that can be queried to return its minimum element in time $O(\log k)$, and you can add a new element to it in $O(\log k)$ time. Suppose you do the direct $k$-way merge but use a MinHeap to find the minimum, as described in Algorithm \ref{kway-min-heap}. What is the complexity of this procedure?
+\begin{algorithm}
+\caption{K-Way Merge using Min Heap}
+\label{kway-min-heap}
+\textbf{Input:}\tab $A_1, A_2, \dots, A_k$ sorted arrays each of size $n$\\
+\textbf{Output:}\tab A single sorted array containing all $n\cdot k$ elements.
+\begin{pseudo}[fullwidth=0.35]
+  \tn{Create an output array $B$ of size $n \cdot k$}\\
+  \tn{Create a min-heap $H$ of size $k$}\\
+  for $1\leq i\leq k$\\+
+  \tn{Insert $A_i[0]$ into $H$}\\-
+  for $i \in \{1, 2, \dots, n \cdot k\}$\\+
+  $m \gets Extract-Min(H)$ & Let $m$ be from $A_i$\\
+  $B[i] = m$\\
+  \tn{Insert next element from $A_i$ into heap} & using $\infty$ if $A_i$ empty\\-
+\end{pseudo}
+\end{algorithm}
+\end{enumerate}
+ \fbox{\parbox{\textwidth}{
+ \begin{enumerate}[label=\alph*.]
+     \item At each step, we compare the first element of each of the k arrays to find the minimum, requiring k-1 comparisons. We repeat this for all n·k elements. Total time complexity: O(nk²).
+     \item Mergesort is $O(n\log{n})$ for size $n$. Our combined array would be $nk$ elements long. So it is $O(nk\log{(nk)})$
+     \item We have $k$ arrays. At each instance of the problem we break the problem into 2 problems of size $k/2$. The time to merge each of the 2 arrays is $nk$. So we say that $T(k) = 2T(\frac{k}{2}) + nk$. We can solve this using the master theorem. Since $\log_{2}{2} = 1 = c$ where $c$ is $k^c=k$. We find that the runtime is $T(k)=O(nk\log{k})$.
+     \item First we perform $k$ operations to add the first element of each $k$ array into the min heap. We then run the main loop $nk$ times. In each iteration we query the min heap once and add to the min heap once. Resulting in 2 calls that each take $\log{k}$ time. This gives our final time complexity as $O(nk\log{k})$.
+ \end{enumerate}
+ }}
+
+\newproblem{Maximum Effort}{20}
+You are given as input an array $A$ containing $n$ integers. Describe a divide and conquer algorithm which outputs two indices $i < j$ such that $A[j] - A[i]$ is maximized. Your algorithm should run in $\Theta(n \lg n)$. You should provide a recurrence for the runtime of your algorithm and solve it.
+
+\begin{algorithm}[H]
+\caption{MAXIMIZE: Divide and Conquer to maximize $A[j] - A[i]$}
+\label{maximize-difference}
+\textbf{Input:}\tab Array $A$ of size $n$\\
+\textbf{Output:}\tab A pair of indices $(i,j)$ that maximizes $A[j] - A[i]$
+\begin{pseudo}
+\textbf{function} MAXIMIZE($A$, $n$):\\+
+if $n = 1$:\\+
+  return $(0, 1)$\\-
+if $n = 2$:\\+
+  return $(0, 1)$\\-
+$m \gets \lfloor n/2 \rfloor$\\
+$l \gets$ MAXIMIZE($A[0..m - 1]$, $m$) \hfill \tn{Recursively solve left half}\\
+$r \gets$ MAXIMIZE($A[m..n - 1]$, $n - m$) \hfill \tn{Recursively solve right half}\\
+\\
+\tn{Find minimum index in left half and maximum index in right half}\\
+min\_left\_idx $\gets$ index of $\min(A[0..m - 1])$\\
+max\_right\_idx $\gets m +$ index of $\max(A[m..n - 1])$\\
+\\
+\tn{Calculate the three possible maximum differences}\\
+$a \gets A[l_1] - A[l_0]$ \hfill \tn{Best solution from left half}\\
+$b \gets A[r_1 + m] - A[r_0 + m]$ \hfill \tn{Best solution from right half}\\
+$c \gets A[$max\_right\_idx$] - A[$min\_left\_idx$]$ \hfill \tn{Cross solution}\\
+\\
+$h \gets \max(a, b, c)$\\
+if $h = a$:\\+
+  return $l$\\-
+else if $h = b$:\\+
+  return $(r_0 + m, r_1 + m)$\\-
+else:\\+
+  return (min\_left\_idx, max\_right\_idx)\\-
+\end{pseudo}
+\end{algorithm}
+\fbox{\parbox{\textwidth}{
+\textbf{Analysis:} At each run of the algorithm we seperate the problem into 2 portions of size $n/2$. Then the merge operation in this case is to compare the left best solution $O(1)$, the right best solution $O(1)$ and find the min/max from the left/right side in linear time $O(n)$. So we have $T(n) = 2T(n/2) + n$. Using the master theorem we find that $\log_2{2} = 1 = c$ where $c$ is the degree of the merge term. So we have the runtime as $O(n\log{n})$. 
+}}
+
+\newproblem{Again and again and again}{10+10+5}
+\begin{enumerate}
+\item Describe an algorithm to determine in $O(n)$ time whether an arbitrary array $A[1 \dots n]$ of integers contains more than $n/4$ copies of any value.
+    \begin{algorithm}[H]
+    \caption{MoreThanQuarter: Check if any value appears more than $n/4$ times}
+    \label{more-than-quarter}
+    \textbf{Input:}\tab Array $A$ of size $n$\\
+    \textbf{Output:}\tab \texttt{true} if any value appears more than $n/4$ times, \texttt{false} otherwise
+    \begin{pseudo}
+    \textbf{function} MoreThanQuarter($A$, $n$):\\+
+    Initialize 3 candidate-count pairs (all empty)\\
+    \textbf{for} each element $x$ in $A$:\\+
+      \textbf{if} $x$ matches an existing candidate:\\+
+        increment that candidate's count\\-
+      \textbf{else if} fewer than 3 candidates exist:\\+
+        add $x$ as a new candidate with count $1$\\-
+      \textbf{else}:\hfill \tn{All 3 candidates exist and $x$ doesn't match any}\\+
+        decrement all 3 counts by $1$\\
+        remove any candidate whose count reaches $0$\\--
+    \tn{Second pass: verify remaining candidates}\\
+    \textbf{for} each remaining candidate $c$:\\+
+      count occurrences of $c$ in $A$\\
+      \textbf{if} count $> \lfloor n/4 \rfloor$:\\+
+        \textbf{return} \texttt{true}\\--
+    \textbf{return} \texttt{false}
+    \end{pseudo}
+    \end{algorithm}
+    \textbf{Analysis:} We run through a linear loop twice. So the time is $O(n)$
+
+\item Describe and analyze an algorithm to determine, given an arbitrary array $A[1 \dots n]$ of integers and an integer $k$, whether $A$ contains more than $k$ copies of any value. You should express the running time of your algorithm as a function of both $n$ and $k$ (that is, do not consider $k$ to be a constant for asymptotic analysis).
+    \begin{algorithm}[H]
+    \caption{MoreThanKCopies: Check if any value appears more than $k$ times}
+    \label{more-than-k-copies}
+    \textbf{Input:}\tab Array $A$ of size $n$, integer $k$\\
+    \textbf{Output:}\tab \texttt{true} if any value appears more than $k$ times, \texttt{false} otherwise
+    \begin{pseudo}
+    \textbf{function} MoreThanKCopies($A$, $n$, $k$):\\+
+    Sort($A$) \hfill \tn{Sort array in $O(n \log n)$ time}\\
+    $i \gets 1$\\
+    \textbf{while} $i \leq n$:\\+
+      $count \gets 1$\\
+      $j \gets i + 1$\\
+      \tn{Count consecutive equal elements}\\
+      \textbf{while} $j \leq n$ \textbf{and} $A[j] = A[i]$:\\+
+        $count \gets count + 1$\\
+        $j \gets j + 1$\\-
+      \textbf{if} $count > k$:\\+
+        \textbf{return} \texttt{true}\\-
+      $i \gets j$ \hfill \tn{Jump to next distinct value}\\-
+    \textbf{return} \texttt{false}
+    \end{pseudo}
+    \end{algorithm}
+    \textbf{Analysis:} The algorithm contains 2 phases: searching and sorting. The sorting phase can be done using merge sort taking $O(n\log{n})$ time. Then we search using a window size of $k$ linearly. Since this loop jumps to the next distinct value it is at most $n$ time. Since the dominating factor is $O(n\log{n})$, the algorithm is $O(n\log{n})$. 
+
+\item Given a sorted array $A[1 \dots n]$ of integers, determine if $A$ has a majority element. A majority element is one that occurs \textit{more} than $\lfloor n/2 \rfloor$ times. Your algorithm should run in $O(\log n)$ time.
+    \begin{algorithm}[H]
+    \caption{MajorityElement: Check if a sorted array has a majority element}
+    \label{majority-element}
+    \textbf{Input:}\tab Sorted array $A$ of size $n$\\
+    \textbf{Output:}\tab \texttt{true} if a majority element exists, \texttt{false} otherwise
+    \begin{pseudo}
+    \textbf{function} MajorityElement($A$, $n$):\\+
+    $candidate \gets A[\lceil n/2 \rceil]$ \hfill \tn{Only possible majority element}\\
+    $left \gets$ binary search for leftmost occurrence of $candidate$ in $A$\\
+    $right \gets$ binary search for rightmost occurrence of $candidate$ in $A$\\
+    $count \gets right - left + 1$\\
+    \textbf{if} $count > \lfloor n/2 \rfloor$:\\+
+      \textbf{return} \texttt{true}\\-
+    \textbf{else}:\\+
+      \textbf{return} \texttt{false}\\-
+    \end{pseudo}
+    \end{algorithm}
+    
+    \textbf{Analysis:} left and right binary serches are each log time. So the two together with some constant operations for adding numbers we have the final time as $O(\log{n})$ as well. 
+
+    
+\end{enumerate}
+\textit{Note: Your algorithm should work even if only allowed to perform comparisons between two values without knowing the exact values themselves. For example, you cannot use hashing based techniques for these problems.}
+
+
+\end{document}
+
+
+
+
+% 2, 4, 5
