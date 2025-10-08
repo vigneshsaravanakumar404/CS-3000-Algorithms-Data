@@ -1,0 +1,456 @@
+\documentclass[11pt, a4paper]{article}
+
+% One of the following is required: problemset, recitation, quiz, exam
+% The following are required: handoutnum, assigneddate.
+% If there is only one date, set both duedate and assigneddate to be the same.
+% Do not change handoutnum or dates
+\usepackage[
+problemset,
+handoutnum=2,
+assigneddate={24 September 2025},duedate={6 October 2025},
+% % Uncomment the line below IF these are solutions
+%% solution,
+% % Uncomment the line below IF you are a student submitting solutions
+% student,
+% % Replace with your name
+name={Fill Submitter's Name},
+% Replace with names of all group members who collarborated on this.
+% If unsure about ordering, then you can follow the convention in theory
+% and list names alphabetically by last name.
+groupmembers={Fill collaborators' names},
+math-preamble,graphicspaths
+]{course-handouts}
+
+% Be careful of commas and put text with spaces within {curly braces}
+% Don't use a comma at the end, but do use commas between options.
+% Weird errors occur otherwise, I wasted some time failing to debug those.
+% DO NOT EDIT
+% These are fixed values that should not be changed during this course.
+\pgfkeys{/course-handouts/.cd,
+instructorname = {Akshar Varma},
+coursename = {CS3000 Algorithms}}
+
+% Add any macros you want below, or put them in a separate file and \input{file}
+% keeping the preamble clean can keep you sane.
+
+\begin{document}
+% Do not change either of the below lines.
+\insertHandoutInfoBox{}
+\ifbool{is-exam}{\input{exam-blurb}} %comment this line only if it throws an error.
+
+% Start adding content from below here.
+
+\section*{Dynamic Programming Solution Template}
+
+Dynamic programming can be very tricky and this template will help guide you through solving new problems.  For any problem asking you to give \emph{a dynamic programming algorithm}, we urge you to get in the habit of going through the list below and filling everything out step by step.  The percentage in parenthesis for each item is the weight that we allocate for the item.  To receive full credit, all of the items below should be correctly provided.
+
+\begin{enumerate}
+\item
+(20\%) An English description of:
+  \begin{enumerate}[nosep]
+  \item the set of subproblems you define,
+  \item the recurrence you write, and
+  \item the logic behind your recurrence.
+  \end{enumerate}
+\item (30\%) The actual recurrence (including base cases).
+\item (5\%) The final value your algorithm needs to return.
+\item (25\%) The algorithm you use to solve the recurrence, written in pseudocode.  You may use either a top-down or bottom-up approach.
+\item (20\%) An analysis of your algorithm's running time.
+\end{enumerate}
+
+
+\newproblem{Profitable Parachuting}{15}
+Given an $m\times n$ grid of positive numbers $A$, find the sequence of moves that starts at any cell in the top row and ends at any cell in the bottom row where a move can go to the cell immediately below the current cell, or to the potentially two neighbors of the cell below it. That is, from the cell $(i, j)$ you can go to $(i+1, j), (i+1, j-1), (i+1, j+1)$ provided all of $j-1, j, j+1 \in {1, \dots, n}$. The sequence of moves should result in the maximum sum of elements along the path.
+
+
+\begin{enumerate}
+    \item 
+    \begin{enumerate}
+        \item We define the set of subproblems as the maximum sum of element path ending in a given square $(i,j)$.
+        \item We define the recurrence relation as follows. The maximum sum of element path ending in a given square $(i,j)$ is the maximum sum of element path ending in the squares $(i-1,j-1)$, $(i-1,j+1)$ or $(i-1,j)$ plus the value of $(i,j)$. 
+        \item Since there are only at most 3 ways to arrive at a cell, we consider the paths from those 3 cells. Each of those 3 cells also have at most 3 ways to arrive at that cell. We keep doing this until we hit the base case in the top row, where cells have no predecessors. To maximize this path we should always choose the maximal way to arrive at a certain cell. 
+    \end{enumerate}
+    
+    \item Define $f(i,j)$ to be the maximum sum of elements of path ending in $(i, j)$, then 
+    \[
+    f(i,j) = A[i,j] + 
+    \begin{cases}
+        0 & \text{if } i = 0 \\
+        \max(f(i-1,j-1),f(i-1,j+1), f(i-1,j)) & \text{if } i > 0
+    \end{cases}
+    \]
+    If at any point $(i-1,j-1)$, $(i-1,j+1)$ or $(i-1,j)$ are out of bounds, assume the value to be 0. 
+    \item Return the sequence of moves (path) from a cell in row 0 to a cell in row $m-1$ that achieves the maximum sum. This can be reconstructed by finding the column in row $m-1$ with maximum $f$ value, then following parent pointers back to row 0.
+    \item Algorithm using 2 helper functions
+        \begin{algorithm}[H]
+            \caption{Profitable Parachuting: Find maximum sum path from top to bottom row}
+            \textbf{Input:}\tab $m \times n$ grid $A$ of positive numbers\\
+            \textbf{Output:}\tab Sequence of moves achieving maximum sum from top to bottom row
+            \begin{pseudo}
+            Initialize $dp[m][n]$ with $-1$\\
+            Initialize $parent[m][n]$ with $-1$\\
+            \\
+            \tn{Compute dp values for all cells in last row}\\
+            \textbf{for} $j = 0$ to $n-1$:\\+
+              $f(m-1, j)$\\-
+            \\
+            \tn{Find column with maximum value in last row}\\
+            $max\_sum \gets 0$, $max\_col \gets 0$\\
+            \textbf{for} $j = 0$ to $n-1$:\\+
+              \textbf{if} $f(m-1, j) > max\_sum$:\\+
+                $max\_sum \gets f(m-1, j)$, $max\_col \gets j$\\--
+            \\
+            $path \gets$ \textsc{ReconstructPath}($max\_col$)\\
+            \textbf{return} $path$
+            \end{pseudo}
+        \end{algorithm}
+        \begin{algorithm}[H]
+            \caption{Helper function $f(i,j)$: compute maximum sum ending at cell $(i,j)$}
+            \begin{pseudo}
+            \textbf{function} $f(i, j)$:\\+
+            \textbf{if} $i < 0$ or $j < 0$ or $j \geq n$: \textbf{return} $0$\\
+            \textbf{if} $dp[i][j] \neq -1$: \textbf{return} $dp[i][j]$\\
+            \\
+            \textbf{if} $i = 0$:\\+
+              $dp[i][j] \gets A[i][j]$\\-
+            \textbf{else}:\\+
+              $left \gets f(i-1, j-1)$ if $j-1 \geq 0$ else $0$\\
+              $middle \gets f(i-1, j)$\\
+              $right \gets f(i-1, j+1)$ if $j+1 < n$ else $0$\\
+              $max\_val \gets \max(left, middle, right)$\\
+              \\
+              \textbf{if} $max\_val = left$ and $j-1 \geq 0$: $parent[i][j] \gets j-1$\\
+              \textbf{else if} $max\_val = middle$: $parent[i][j] \gets j$\\
+              \textbf{else}: $parent[i][j] \gets j+1$\\
+              \\
+              $dp[i][j] \gets A[i][j] + max\_val$\\-
+            \\
+            \textbf{return} $dp[i][j]$
+            \end{pseudo}
+        \end{algorithm}
+        \begin{algorithm}[H]
+            \caption{Helper function ReconstructPath: build path using parent pointers}
+            \begin{pseudo}
+            \textbf{function} \textsc{ReconstructPath}($ending\_col$):\\+
+            $path \gets$ empty list, $current\_col \gets ending\_col$\\
+            \textbf{for} $i = m-1$ down to $0$:\\+
+              append $(i, current\_col)$ to $path$\\
+              $current\_col \gets parent[i][current\_col]$\\-
+            reverse $path$\\
+            \textbf{return} $path$
+            \end{pseudo}
+        \end{algorithm}
+    \item The algorithm computes $f(m-1, j)$ for each of the $n$ columns. Each call to $f$ uses memoization, so each cell $(i,j)$ is computed at most once. There are $m \times n$ cells total, and each cell computation takes $O(1)$ time (three lookups and a max operation). The path reconstruction takes $O(m)$ time. Therefore, the overall time complexity is $O(m \cdot n)$. 
+\end{enumerate}
+
+
+\newproblem{Alice's Career in Wonderland}{20}
+
+Alice, having gotten stuck in Wonderland, has to plan her working life for the next $T$ years. There are $n$ different jobs that Alice can do, and every year Alice must do exactly one job. Each job pays different amounts depending on the year. For example, being an event organizer pays more when the Mad Hatter is especially interested in having more parties. Formally, during year $t$ a job $j$ pays $P[j,t]$. Give a dynamic programming algorithm for the maximum possible earnings of Alice over the next $T$ years, supposing she can switch jobs at most $S$ times.
+
+\begin{enumerate}
+    \item 
+    \begin{enumerate}
+        \item We define the set of subproblems as the maximum total earnings from year 1 through year $t$, where Alice does job $j$ in year $t$ and has made exactly $s$ job switches in total.
+        \item We define the recurrence relation as follows. The maximum earning at year $t$ doing job $j$ with $s$ switches used is computed by considering two possibilities: either Alice was doing job $j$ in year $t-1$ (no switch), or Alice was doing some different job $k \neq j$ in year $t-1$ (making a switch). We take the maximum of these options and add the payment for job $j$ in year $t$.
+        \item The logic works because any optimal earning sequence must have come from one of two scenarios. If Alice does job $j$ at year $t$ with $s$ switches total, she either continued from job $j$ at year $t-1$ (using $s$ switches), or she switched from some other job $k$ at year $t-1$ (using $s-1$ switches before the switch). By tracking both the current job and number of switches used, we ensure we only count valid job sequences that respect the switch limit $S$.
+    \end{enumerate}
+    
+    \item Define $f(t, j, s)$ to be the maximum total earnings from year 1 through year $t$, such that Alice does job $j$ in year $t$ and has made exactly $s$ job switches. Then:
+    \[
+    f(t, j, s) = 
+    \begin{cases}
+        P[j,1] & \text{if } t = 1 \text{ and } s = 0 \\
+        -\infty & \text{if } t = 1 \text{ and } s > 0 \\
+        P[j,t] + \max\begin{cases}
+            f(t-1, j, s) & \text{(no switch)} \\
+            \max_{k \neq j} f(t-1, k, s-1) & \text{if } s \geq 1 \text{ (switch)}
+        \end{cases} & \text{if } t > 1
+    \end{cases}
+    \]
+    
+    \item Return $\max\{f(T, j, s) : j \in \{0, \ldots, n-1\}, s \in \{0, \ldots, S\}\}$, which gives the maximum possible earnings over all $T$ years with at most $S$ switches.
+    
+    \item Algorithm:
+        \begin{algorithm}[H]
+            \caption{Alice's Career: Find maximum earnings with limited switches}
+            \textbf{Input:}\tab Payment matrix $P[n][T]$, number of jobs $n$, years $T$, max switches $S$\\
+            \textbf{Output:}\tab Maximum possible earnings
+            \begin{pseudo}
+            Initialize $dp[T+1][n][S+1]$ with $-\infty$\\
+            \\
+            \tn{Base case: year 1, no switches}\\
+            \textbf{for} $j = 0$ to $n-1$:\\+
+              $dp[1][j][0] \gets P[j][1]$\\-
+            \\
+            \tn{Fill DP table for years 2 through T}\\
+            \textbf{for} $t = 2$ to $T$:\\+
+              \textbf{for} $j = 0$ to $n-1$:\\+
+                \textbf{for} $s = 0$ to $S$:\\+
+                  \tn{Option 1: Continue same job (no switch)}\\
+                  \textbf{if} $dp[t-1][j][s] \neq -\infty$:\\+
+                    $dp[t][j][s] \gets \max(dp[t][j][s], P[j][t] + dp[t-1][j][s])$\\-
+                  \\
+                  \tn{Option 2: Switch from another job k (if s >= 1)}\\
+                  \textbf{if} $s \geq 1$:\\+
+                    \textbf{for} $k = 0$ to $n-1$:\\+
+                      \textbf{if} $k \neq j$ and $dp[t-1][k][s-1] \neq -\infty$:\\+
+                        $dp[t][j][s] \gets \max(dp[t][j][s], P[j][t] + dp[t-1][k][s-1])$\\---\\--
+            \\
+            \tn{Find maximum earnings in final year}\\
+            $result \gets -\infty$\\
+            \textbf{for} $j = 0$ to $n-1$:\\+
+              \textbf{for} $s = 0$ to $S$:\\+
+                $result \gets \max(result, dp[T][j][s])$\\--
+            \\
+            \textbf{return} $result$
+            \end{pseudo}
+        \end{algorithm}
+
+    \item The algorithm uses a 3-dimensional DP table $dp[T+1][n][S+1]$ to store results for all year-job-switch combinations. There are $O(T \times n \times S)$ total subproblems. For each subproblem at year $t$, job $j$, and $s$ switches, we check the no-switch option in $O(1)$ time, and we check all $n$ possible previous jobs for the switch option in $O(n)$ time. The overall time complexity is $O(T \times n^2 \times S)$. 
+\end{enumerate}
+
+
+\newproblem{Loki and Sylvie and Alternating Games}{25}
+
+Suppose Loki and Sylvie are given an array $A[1...n]$ of integers. They are playing a game where they alternate turns, and at each turn a player chooses one of the two integers at the end of the array. After they choose that number, the number gets deleted from the array and it's the next person's turn. The winner of the game is the one who has the larger sum from the numbers they have chosen. Give a dynamic programming solution for Loki to \textit{maximize the sum of the integers she chooses}, assuming that Sylvie plays optimally.
+
+For example, suppose we have the array $A = [8, 7, 8, 9]$.  Loki can choose 9 in the first turn. Then we have the array $[8, 7, 8]$ and Sylvie can choose either 8. Then Loki has a choice between picking 7 and 8 so she chooses 8 which leaves Sylvie with 7. Alternatively, if Loki had initially chosen 8, then Sylvie would have chosen the 9 and Loki would choose the remaining 8. Thus, for this specific configuration, with optimal play, Loki and Sylvie will both have the same totals.
+
+\begin{enumerate}
+    \item 
+    \begin{enumerate}
+        \item We define the set of subproblems to be the net difference (current player's score minus opponent's score) for a subarray $A[i...j]$ when it's a given player's turn.
+        \item We define the recurrence relation using a turn parameter $t$ where $t=1$ represents Loki's turn and $t=0$ represents Sylvie's turn. The net difference for the current player is computed by taking the value at either end of the array (added when Loki plays, not added when Sylvie plays) plus the net difference from the remaining subarray with the turn flipped.
+        \item The logic works because each player alternates turns. When it's Loki's turn ($t=1$), she maximizes the net difference by choosing the option that gives the highest value. When it's Sylvie's turn ($t=0$), she minimizes the net difference (from Loki's perspective) by choosing the option that gives the lowest value. By tracking turns, we accumulate the net difference throughout the game, which guides optimal play for both players.
+    \end{enumerate}
+    
+    \item Define $g(i, j, t)$ to be the net difference (Loki's total minus Sylvie's total) achievable from subarray $A[i...j]$ when it's the current player's turn, where $t = 1$ if it's Loki's turn and $t = 0$ if it's Sylvie's turn. Then:
+    \[
+    g(i, j, t) = 
+    \begin{cases}
+        A[i] & \text{if } i = j \text{ and } t = 1 \\
+        0 & \text{if } i = j \text{ and } t = 0 \\
+        \max(g(i+1, j, 1-t) + A[i], \; g(i, j-1, 1-t) + A[j]) & \text{if } i < j \text{ and } t = 1 \\
+        \min(g(i+1, j, 1-t), \; g(i, j-1, 1-t)) & \text{if } i < j \text{ and } t = 0
+    \end{cases}
+    \]
+    
+    \item The algorithm computes $g(1, n, 1)$ to get the net difference, then reconstructs Loki's actual sum by simulating the optimal play and tracking which elements Loki picks. Return the reconstructed sum value representing the maximum sum Loki can achieve with optimal play.
+    
+    \item Algorithm using 2 helper functions:
+        \begin{algorithm}[H]
+            \caption{Loki and Sylvie Alternating Game: Find maximum sum for Loki}
+            \textbf{Input:}\tab Array $A[1...n]$ of integers\\
+            \textbf{Output:}\tab Maximum sum Loki can achieve with optimal play
+            \begin{pseudo}
+            Initialize $dp[n][n][2]$ with $\text{null}$\\
+            \\
+            \tn{Compute optimal value for the full array}\\
+            $max\_diff \gets g(1, n, 1)$\\
+            \\
+            \tn{Reconstruct Loki's sum}\\
+            $loki\_sum \gets$ \textsc{ReconstructLokiSum}()\\
+            \\
+            \textbf{return} $loki\_sum$
+            \end{pseudo}
+        \end{algorithm}
+        
+        \begin{algorithm}[H]
+            \caption{Helper function $g(i, j, t)$: compute net difference with optimal play}
+            \begin{pseudo}
+            \textbf{function} $g(i, j, t)$:\\+
+            \textbf{if} $dp[i][j][t] \neq \text{null}$: \textbf{return} $dp[i][j][t]$\\
+            \\
+            \textbf{if} $i = j$:\\+
+              \textbf{if} $t = 1$:\\+
+                $dp[i][j][t] \gets A[i]$\\-
+              \textbf{else}:\\+
+                $dp[i][j][t] \gets 0$\\--
+            \textbf{else}:\\+
+              \textbf{if} $t = 1$: \tn{// Loki's turn - maximize}\\+
+                $choose\_left \gets g(i+1, j, 0) + A[i]$\\
+                $choose\_right \gets g(i, j-1, 0) + A[j]$\\
+                $dp[i][j][t] \gets \max(choose\_left, choose\_right)$\\-
+              \textbf{else}: \tn{// Sylvie's turn - minimize}\\+
+                $choose\_left \gets g(i+1, j, 1)$\\
+                $choose\_right \gets g(i, j-1, 1)$\\
+                $dp[i][j][t] \gets \min(choose\_left, choose\_right)$\\--
+            \\
+            \textbf{return} $dp[i][j][t]$
+            \end{pseudo}
+        \end{algorithm}
+        
+        \begin{algorithm}[H]
+            \caption{Helper function ReconstructLokiSum: reconstruct Loki's optimal sum}
+            \begin{pseudo}
+            \textbf{function} \textsc{ReconstructLokiSum}():\\+
+            $loki\_sum \gets 0$\\
+            $i \gets 1$, $j \gets n$, $t \gets 1$\\
+            \\
+            \textbf{while} $i \leq j$:\\+
+              \textbf{if} $i = j$:\\+
+                \textbf{if} $t = 1$: $loki\_sum \gets loki\_sum + A[i]$\\
+                \textbf{break}\\-
+              \\
+              \textbf{if} $t = 1$: \tn{// Loki's turn}\\+
+                $choose\_left \gets dp[i+1][j][0] + A[i]$\\
+                $choose\_right \gets dp[i][j-1][0] + A[j]$\\
+                \\
+                \textbf{if} $choose\_left \geq choose\_right$:\\+
+                  $loki\_sum \gets loki\_sum + A[i]$\\
+                  $i \gets i + 1$\\-
+                \textbf{else}:\\+
+                  $loki\_sum \gets loki\_sum + A[j]$\\
+                  $j \gets j - 1$\\--
+              \textbf{else}: \tn{// Sylvie's turn}\\+
+                $choose\_left \gets dp[i+1][j][1]$\\
+                $choose\_right \gets dp[i][j-1][1]$\\
+                \\
+                \textbf{if} $choose\_left \leq choose\_right$:\\+
+                  $i \gets i + 1$\\-
+                \textbf{else}:\\+
+                  $j \gets j - 1$\\--
+              \\
+              $t \gets 1 - t$ \tn{// Flip turn}\\-
+            \\
+            \textbf{return} $loki\_sum$
+            \end{pseudo}
+        \end{algorithm}
+
+    \item The algorithm uses a 3-dimensional DP table $dp[n][n][2]$ to store results for all possible subarrays and turn combinations. There are $O(n^2)$ possible subarrays $A[i...j]$ where $1 \leq i \leq j \leq n$, and for each subarray we have 2 possible turns (Loki or Sylvie), giving $O(n^2)$ total subproblems. Each subproblem is computed at most once due to memo. The sum reconstruction is linear time. Therefore, the overall time complexity is $O(n^2)$. 
+\end{enumerate}
+
+\newproblem{Hollow Subsequences}{20}
+A sequence of numbers $X[1 \dots n]$ is called \textit{hollow} if $2 \cdot X[i] > X[i-1] + X[i+1]$ for all values of $1 < i < n$.
+
+Given an input array $A$ of $n$ integers, describe an efficient algorithm to compute the \textit{length} of the longest hollow subsequence\footnote{A subsequence $S$ of a given sequence $Y$ is a sequence that can be derived from the $Y$ by deleting some or no elements without changing the order of the remaining elements.} of $A$.
+
+\begin{enumerate}
+    \item 
+    \begin{enumerate}
+        \item We define the set of subproblems as the length of the longest hollow subsequence ending at position $i$ in array $A$ with the last element being $A[i]$ and the second-to-last element being $A[j]$ where $j < i$.
+        \item We define the recurrence relation as such. For a hollow subsequence ending at position $i$ with previous element at position $j$ (where $j < i$), we need to find the best position $k < j$ such that the three elements $A[k], A[j], A[i]$ satisfy the property. The length at $(i,j)$ is 1 plus the maximum length of any valid subsequence ending at $(j,k)$.
+        \item The logic works because a hollow subsequence is determined by checking the property between every three consecutive elements in the subsequence. When we place element $A[i]$ at the end of a subsequence that previously ended with $A[j]$, we need to verify that for the element before $A[j]$ (say $A[k]$), the triple $(A[k], A[j], A[i])$ satisfies the hollow condition. By tracking the last two positions in our DP state, we can check this condition and build up longer hollow subsequences by extending valid shorter ones.
+    \end{enumerate}
+    
+    \item Define $h(i, j)$ to be the length of the longest hollow subsequence ending at position $i$ with the previous element at position $j$ (where $j < i$). Then:
+    \[
+    h(i, j) = 
+    \begin{cases}
+        2 & \text{if no valid } k < j \text{ exists}\\
+        \max_{k < j} \{h(j, k) + 1 : 2 \cdot A[j] > A[k] + A[i]\} & \text{if valid } k \text{ exists}\\
+        2 & \text{if no } k \text{ satisfies hollow property}
+    \end{cases}
+    \]
+    
+    Base case: Any two elements form a valid hollow subsequence of length 2.
+    
+    \item Return $\max_{i,j} h(i,j)$ where $1 \leq j < i \leq n$, which gives the length of the longest hollow subsequence in the entire array.
+    
+    \item Algorithm:
+        \begin{algorithm}[H]
+            \caption{Find length of longest hollow subsequence}
+            \textbf{Input:}\tab Array $A[1...n]$ of integers\\
+            \textbf{Output:}\tab Length of longest hollow subsequence
+            \begin{pseudo}
+            Initialize $dp[n][n]$ with $-1$\\
+            $max\_length \gets 0$\\
+            \\
+            \tn{Compute all possible ending pairs}\\
+            \textbf{for} $i \gets 2$ \textbf{to} $n$:\\+
+              \textbf{for} $j \gets 1$ \textbf{to} $i-1$:\\+
+                $max\_length \gets \max(max\_length, h(i, j))$\\--
+            \\
+            \textbf{return} $max\_length$
+            \end{pseudo}
+        \end{algorithm}
+        
+        \begin{algorithm}[H]
+            \caption{Helper function $h(i, j)$: compute longest hollow subsequence ending at $(i,j)$}
+            \begin{pseudo}
+            \textbf{function} $h(i, j)$:\\+
+            \textbf{if} $dp[i][j] \neq -1$: \textbf{return} $dp[i][j]$\\
+            \\
+            $dp[i][j] \gets 2$ \tn{// Base case: any two elements form length 2}\\
+            \\
+            \tn{Try extending from all valid previous positions}\\
+            \textbf{for} $k \gets 1$ \textbf{to} $j-1$:\\+
+              \textbf{if} $2 \cdot A[j] > A[k] + A[i]$: \tn{// Check hollow property}\\+
+                $dp[i][j] \gets \max(dp[i][j], h(j, k) + 1)$\\--
+            \\
+            \textbf{return} $dp[i][j]$
+            \end{pseudo}
+        \end{algorithm}
+
+    \item The algorithm uses a 2D DP table $dp[n][n]$ where $dp[i][j]$ represents the longest hollow subsequence ending at positions $i$ and $j$. There are $O(n^2)$ possible pairs $(i,j)$ where $1 \leq j < i \leq n$. For each pair $(i,j)$, we compute $h(i,j)$ which involves checking all positions $k < j$, taking $O(n)$ time per subproblem. Each subproblem is computed at most once due to memoization. Final time is $O(n^3)$
+\end{enumerate}
+
+\newproblem{Rookie Morse User}{25}
+
+Morse code encodes text characters using signals of two different durations, commonly represented using dots (a short signal) and dashes (a long signal). When using text to convey morse code characters, a sequence of dots and dashes represents one character (all English alphabets can be represented using at most four dot/dash symbols). Usually a `/' symbol is used to separate different characters and a space to separate words. However, due to an error, all the / and spaces have been removed from the file containing some morse code.
+
+For example, the common SOS signal for an emergency can be represented as ``\verb|.../---/...|'' in text form. However, due to the error, this shows up as ``\verb|...---...|'' in the file which can be decoded in a variety of ways and not just as SOS. For example, it can be decoded as ``EEETTTEEE'' since ``\verb|.|'' is the morse code for E and ``\verb|-|'' for T. The same message can also be decodeed in many other ways. For example, ``\verb|..|'' is I and ``\verb|--|'' is M, so ``EIMTEI'' is also a valid decoding.
+
+\begin{itemize}
+\item You can assume that the total number of dots or dashes in the given morse code is $n$.
+\item You also have access to a function $M$ which you can query with any sequence $s$ of 4 or less dots/dashes and $M(s)$ will return the alphabet it represents if $s$ is a valid morse code.\footnote{Since all English alphabets can be represented using at most 4 symbols, $M(s)$ will always return ``None'' if given an input with more than 4 symbols.} If there is no alphabet which maps to $s$ in morse code, then $M(s)$ returns ``None''. Assume that calls to this function take $O(1)$ time.
+\end{itemize}
+
+\textit{Given a text representation of morse code which is missing `/' and spaces, determine how many different ways can it be decoded into text characters.}
+
+\begin{enumerate}
+    \item 
+    \begin{enumerate}
+        \item We define the set of subproblems as the number of ways to decode a morse code string starting at position $i$.
+        \item We define the recurrence relation as follows. The number of ways to decode a string starting at position $i$ is the sum of the number of ways to decode the remaining string after consuming a valid morse code character. We try consuming the next 1, 2, 3, or 4 characters (if $M$ says they are a valid morse string), and for each valid prefix, we add the number of ways to decode the rest of the string.
+        \item The logic works because you can place a "space" or not place a "space" between each char. For each string we can either place or not place a "space" in the first 4 characters. Valid morse string will add to the total combinations while invalid ones will keep the algorithm looking. 
+    \end{enumerate}
+    
+    \item Define $f(i)$ to be the number of ways to decode the substring $s[i:n]$. Then:
+    \[
+    f(i) = 
+    \begin{cases}
+        1 & \text{if } i = n \\
+        \sum_{k=1}^{\min(4, n-i)} \begin{cases} f(i+k) & \text{if } M(s[i:i+k]) \neq \text{False} \\ 0 & \text{otherwise} \end{cases} & \text{if } i < n
+    \end{cases}
+    \]
+    
+    \item Return $f(0)$, which gives the total number of ways to decode the entire string $s[0:n]$.
+    
+    \item Algorithm:
+        \begin{algorithm}[H]
+            \caption{Count number of ways to decode morse code string}
+            \textbf{Input:}\tab Morse code string $s$ of length $n$\\
+            \textbf{Output:}\tab Number of ways to decode $s$ into text characters
+            \begin{pseudo}
+            Initialize $dp[0 \dots n]$ with $-1$\\
+            \\
+            \textbf{return} $f(0)$
+            \end{pseudo}
+        \end{algorithm}
+        
+        \begin{algorithm}[H]
+            \caption{Helper function $f(i)$: count decodings from position $i$}
+            \begin{pseudo}
+            \textbf{function} $f(i)$:\\+
+            \textbf{if} $dp[i] \neq -1$: \textbf{return} $dp[i]$\\
+            \\
+            \textbf{if} $i = n$:\\+
+              $dp[i] \gets 1$\\
+              \textbf{return} $1$\\-
+            \\
+            $count \gets 0$\\
+            \\
+            \textbf{for} $k \gets 1$ \textbf{to} $\min(4, n-i)$:\\+
+              \textbf{if} $M(s[i:i+k]) \neq \text{None}$:\\+
+                $count \gets count + f(i+k)$\\--
+            \\
+            $dp[i] \gets count$\\
+            \textbf{return} $count$
+            \end{pseudo}
+        \end{algorithm}
+
+    \item The algorithm computes $f(i)$ for each position $0 \leq i \leq n$. There are $n+1$ possible values of $i$, and each is computed at most once due to memoization. For each position $i$, we try at most 4 different prefix lengths (1, 2, 3, or 4 characters), and for each prefix we call $M$ which takes $O(1)$ time. The overall time complexity is $ O(n)$. 
+\end{enumerate}
+\end{document}
