@@ -1,0 +1,236 @@
+\documentclass[11pt, a4paper]{article}
+
+% One of the following is required: problemset, recitation, quiz, exam
+% The following are required: handoutnum, assigneddate.
+% If there is only one date, set both duedate and assigneddate to be the same.
+% Do not change handoutnum or dates
+\usepackage[
+problemset,
+handoutnum=3,
+assigneddate={7 October 2025},duedate={16 October 2025},
+% % Uncomment the line below IF these are solutions
+%% solution,
+% % Uncomment the line below IF you are a student submitting solutions
+% student,
+% % Replace with your name
+name={Vignesh Saravanakumar},
+% Replace with names of all group members who collarborated on this.
+% If unsure about ordering, then you can follow the convention in theory
+% and list names alphabetically by last name.
+groupmembers={},
+math-preamble,graphicspaths={{./images}},
+]{course-handouts}
+
+% Be careful of commas and put text with spaces within {curly braces}
+% Don't use a comma at the end, but do use commas between options.
+% Weird errors occur otherwise, I wasted some time failing to debug those.
+% DO NOT EDIT
+% These are fixed values that should not be changed during this course.
+\pgfkeys{/course-handouts/.cd,
+instructorname = {Akshar Varma},
+coursename = {CS3000 Algorithms}}
+
+% Add any macros you want below, or put them in a separate file and \input{file}
+% keeping the preamble clean can keep you sane.
+
+\begin{document}
+% Do not change either of the below lines.
+\insertHandoutInfoBox{}
+\ifbool{is-exam}{\input{exam-blurb}} %comment this line only if it throws an error.
+
+% Start adding content from below here.
+
+\newproblem{Covering Intervals}{4+10+10+6=30}
+ Let $X$ be a set of $n$ intervals on the real line. The input, for each $1 \leq i \leq n$, specifies the start value $s_i$ and the finish value $f_i$ of interval $i$. We say that a subset of intervals $Y \subseteq X$ \emph{covers} $X$ if the union of all intervals in $Y$ is equal to the union of all intervals in $X$ . The \emph{size} of a cover is just the number of intervals.   Here is an example.
+
+\begin{figure}[h]
+     \centering
+     \includegraphics[width=0.8\linewidth]{ps3-covering.png}
+ \end{figure}
+
+The goal of the problem is to find a cover of minimum size.
+
+\begin{enumerate}[label=\textbf{(\alph*)}]
+    \item Consider the following greedy strategy for the problem.  Initialize $S$ and $U$ to be $\emptyset$.  Here $S$ will maintain the solution. And $U$ will be the union of the intervals in $S$; that is, $U$ is the set of all points covered by $S$.  Repeat until $X$ is covered:
+    \begin{enumerate}
+        \item Find interval $I$ that has the largest length of $I \setminus U$; that is, $I$ is the interval that covers the largest measure of uncovered points.
+        \item $S \leftarrow S \cup \{I\}$.
+        \item $U \leftarrow U \cup I$.
+    \end{enumerate}
+    Give an instance of the problem for which the above greedy algorithm \textbf{does not} return the optimal solution.
+    \item Design an optimal greedy algorithm for the problem.  Give a brief description in English and write your algorithm in pseudocode.
+    \item Prove that your algorithm is correct.
+
+    \textbf{Hint:} A natural way to prove correctness is a greedy stays ahead argument.
+
+    \item Analyze the running time of your algorithm.
+\end{enumerate}
+
+\fbox{\parbox{\textwidth}{
+    \begin{enumerate}[label=\textbf{(\alph*)}]
+        \item Suppose that $X = \{[0, 5],[1,9],[5, 10]\}$. Our algorithm chooses $[1,9]$ as that is the interval that covers the largest measure of uncovered points. Then it must choose both $[0, 5],[5, 10]$ which makes it size 3. The ideal solution is simply $[0, 5],[5, 10]$. 
+        \item We sort the intervals by latest finish time. Traversing our sorted set of intervals by latest finish time, we choose the first interval that starts before the last interval ends or time = 0. If an interval satisfies this solution we add it to the solution set. 
+        \begin{algorithm}[H]
+            \caption{Covering Intervals}
+            \textbf{Input:}\tab A set of intervals $X$ of size $n$, where each interval $i$ has start $s_i$ and finish $f_i$. \\
+            \textbf{Output:}\tab A subset of intervals $S$ that covers $X$
+            \begin{pseudo}
+            Sort $X$ by $(s_i, f_i)$\\
+            \\
+            $target \gets \max\{f_i : i \in X\}$\\
+            $pos \gets s_1$ \tn{(start of first interval)}\\
+            $S \gets \emptyset$\\
+            $i \gets 1$\\
+            \\
+            \textbf{while} $pos < target$:\\+
+                $best \gets \text{null}$\\
+                \\
+                \tn{Find interval covering pos that extends furthest}\\
+                \textbf{while} $i \leq n$ and $s_i \leq pos$:\\+
+                    \textbf{if} $best = \text{null}$ or $f_i > f_{best}$:\\+
+                        $best \gets i$\\-
+                    $i \gets i + 1$\\-
+                \\
+                $S \gets S \cup \{best\}$\\
+                $pos \gets f_{best}$\\-
+            \\
+            \textbf{return} $S$
+            \end{pseudo}
+        \end{algorithm}\
+    \item Proof by contradiction:
+        Let $G = \{g_1, g_2, \ldots, g_k\}$ be the intervals chosen by our greedy algorithm (in order of selection) and let $O = \{o_1, o_2, \ldots, o_m\}$ be any optimal solution. Then for all $i \leq \min(k, m)$, we have $f_{g_i} \geq f_{o_i}$ (the greedy solution covers at least as far after $i$ intervals).
+         
+        \textbf{Proof by induction on $i$:}
+        
+        \textit{Base case} ($i=1$): Our algorithm picks the interval starting at the leftmost point that extends furthest. Any optimal solution must also cover from the start, so $f_{g_1} \geq f_{o_1}$.
+        
+        \textit{Inductive step}: Assume $f_{g_i} \geq f_{o_i}$. At step $i+1$, our greedy algorithm picks the interval that starts at or before $f_{g_i}$ and extends furthest. The optimal solution must pick some interval $o_{i+1}$ that starts at or before $f_{o_i}$. Since $f_{g_i} \geq f_{o_i}$, any interval available to the optimal solution is also available to our greedy algorithm. Our greedy choice extends at least as far: $f_{g_{i+1}} \geq f_{o_{i+1}}$.
+        
+        \textbf{Conclusion:} Since our greedy solution stays ahead at every step, if it uses $k$ intervals to cover everything, then $k \leq m$. Therefore our algorithm is optimal. \qed
+        
+    \item Initial sort is of time $n\log n$. Then we do a linear pass through the sorted intervals making constant operations in each iteration of the loop. So the final time is $O(n \log n)$. 
+    \end{enumerate}
+}}
+
+
+\newproblem{Stabbing Intervals}{14+10+6=30}
+Let $X$ be a set of $n$ intervals on the real line. The input, for each $1 \leq i \leq n$, specifies the start value $s_i$ and the finish value $f_i$ of interval $i$. We say that a set $P$ of points \emph{stabs} $X$ if every interval in $X$ contains at least one point in $P$.  Here is an example.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\linewidth]{ps3-stabbing.png}
+\end{figure}
+
+The goal of the problem is to find the smallest set of points that stabs $X$.
+
+\begin{enumerate}[label=\textbf{(\alph*)}]
+\item Design an optimal greedy algorithm for the problem.  Give a brief description in English and write your algorithm in pseudocode.
+
+\textbf{Hint:} Without loss of generality, you can design your algorithm so that it only select the points that represent the finish values of some intervals.  The main task for your algorithm design is to decide which intervals' finish values will you select.
+
+\item Prove that your algorithm is correct.
+\item Analyze the running time of your algorithm.
+\end{enumerate}
+
+\fbox{\parbox{\textwidth}{
+    \begin{enumerate}
+        \item We sort the intervals by latest end time. Then we stab at the finish time of the first interval. Then each next stab is done at the first end time of the interval that is not covered by the previous stab. 
+            \begin{algorithm}[H]
+                \caption{Covering Intervals}
+                \textbf{Input:} A set of intervals $X$ of size $n$, where each interval $i$ has start $s_i$ and finish $f_i$. \\
+                \textbf{Output:} A subset of intervals $S$ that covers $X$
+                \begin{pseudo}
+                Sort $X$ by $(s_i, f_i)$\\
+                \\
+                $target \gets \max\{f_i : i \in X\}$\\
+                $pos \gets s_1$ \tn{Start of first interval}\\
+                $S \gets \emptyset$\\
+                $i \gets -\infty$\\
+                \\
+                \textbf{while} $pos < target$:\\+
+                    $best \gets \text{null}$\\
+                    \\
+                    \tn{Find interval covering pos that extends furthest}\\
+                    \textbf{while} $i \leq n$ \textbf{and} $s_i \leq pos$:\\+
+                        \textbf{if} $best = \text{null}$ \textbf{or} $f_i > f_{best}$:\\+
+                            $best \gets i$\\-
+                        $i \gets i + 1$\\-
+                    \\
+                    $S \gets S \cup \{best\}$\\
+                    $pos \gets f_{best}$\\-
+                \\
+                \textbf{return} $S$
+            \end{pseudo}         
+        \end{algorithm}
+        \item 
+            Let $G = \{g_1, g_2, \ldots, g_k\}$ be the stab points chosen by our algorithm (where $g_i$ is the finish time of some interval) and let $O = \{o_1, o_2, \ldots, o_m\}$ be any optimal solution with $m$ stabs.
+            
+            Our greedy algorithm produces an optimal stabbing set, i.e., $k = m$. We note that our first stab $g_1$ is at the finish of the earliest-finishing interval. So at least one stab is needed before this point. Every stab we place is necessary (there exists at least one interval that needs it as explained previously). Each stab we place stabs the maximum number of subsequent intervals. Consider any interval $I$ that caused us to place a stab at its finish time. No previous stab covered $I$ (by the choice of our stabs). Therefore any valid solution, including $O$, must have a stab inside $I$. We can map each of our $k$ stabs to a distinct ``forcing interval.'' Any optimal solution must stab each forcing interval, so $m \geq k$. By the method of choosing stabs, every interval is stabbed by our algorithm (it either contains a stab we placed, or was covered by a previous stab). Since $k = m$, our algorithm is optimal. \qed
+        
+        \item This algorithm sorts in $n \log n$ then does a linear pass through the sorted set. So the final time is $O(n \log n)$.
+    \end{enumerate}
+}}
+
+
+
+\newproblem{Partition into Positive Intervals}{14+10+6=30}
+Suppose you are given an array $A[1 \dots n]$ of integers each of which may be positive, negative or zero.
+A contiguous subarray $A[i \dots j]$ is called a positive interval if the sum of elements in the subarray is positive.
+The goal is to cover every positive element in $A$ using the minimum number of positive intervals.
+For example, given the array $A = [3, -5, 7, -4, 1, -8, 3, -7, 5, -9, 5, -2, 4]$ as input, your algorithm should output 3 (see example partition below).
+If every element of your array is negative (or zero) your algorithm should output 0.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\linewidth]{ps3-positive-intervals.png}
+\end{figure}
+
+\begin{enumerate}[label=\textbf{(\alph*)}]
+\item Design an optimal greedy algorithm for the finding the smallest collection of positive intervals which cover every positive element in $A$.  Give a brief description in English and write your algorithm in pseudocode.
+\item Prove that your algorithm is correct.
+\item Analyze the running time of your algorithm.
+\end{enumerate}
+
+\fbox{\parbox{\textwidth}{
+    \begin{enumerate}[label=\textbf{(\alph*)}]
+        \item We scan through the array from left to right. When we encounter a positive element that is not yet covered by any interval, we start a new interval. We extend this interval to the right as long as the cumulative sum remains positive. When the sum would become non-positive or we reach the end of the array, we close the current interval and continue scanning.
+        
+        \begin{algorithm}[H]
+            \caption{Partition into Positive Intervals}
+            \textbf{Input:} An array $A[1 \dots n]$ of integers \\
+            \textbf{Output:} Number of positive intervals needed to cover all positive elements
+            \begin{pseudo}
+            $count \gets 0$\\
+            $i \gets 1$\\
+            \\
+            \textbf{while} $i \leq n$:\\+
+                \tn{Skip negative and zero elements}\\
+                \textbf{while} $i \leq n$ \textbf{and} $A[i] \leq 0$:\\+
+                    $i \gets i + 1$\\-
+                \\
+                \textbf{if} $i > n$:\\+
+                    \textbf{break}\\-
+                \\
+                \tn{Start new positive interval}\\
+                $count \gets count + 1$\\
+                $sum \gets 0$\\
+                \\
+                \tn{Extend interval while sum stays positive}\\
+                \textbf{while} $i \leq n$ \textbf{and} $sum + A[i] > 0$:\\+
+                    $sum \gets sum + A[i]$\\
+                    $i \gets i + 1$\\-
+            \\-
+            \textbf{return} $count$
+            \end{pseudo}
+        \end{algorithm}
+        
+        \item This doesnt work so no proof
+        
+        \item The algorithm makes a single pass through the array, performing constant time operations at each step. Therefore, the running time is $O(n)$. 
+    \end{enumerate}
+    
+    
+}}
+
+
+\end{document}
