@@ -1,0 +1,280 @@
+\documentclass[11pt, a4paper]{article}
+
+% One of the following is required: problemset, recitation, quiz, exam
+% The following are required: handoutnum, assigneddate.
+% If there is only one date, set both duedate and assigneddate to be the same.
+% Do not change handoutnum or dates
+\usepackage[
+problemset,
+handoutnum=4,
+assigneddate={22 October 2025},duedate={1 November 2025},
+% % Uncomment the line below IF these are solutions
+% solution,
+% % Uncomment the line below IF you are a student submitting solutions
+% student,
+% % Replace with your name
+name={Fill Submitter's Name},
+% Replace with names of all group members who collarborated on this.
+% If unsure about ordering, then you can follow the convention in theory
+% and list names alphabetically by last name.
+groupmembers={Fill collaborators' names},
+math-preamble,graphicspaths={{./images}},
+]{course-handouts}
+
+% Be careful of commas and put text with spaces within {curly braces}
+% Don't use a comma at the end, but do use commas between options.
+% Weird errors occur otherwise, I wasted some time failing to debug those.
+% DO NOT EDIT
+% These are fixed values that should not be changed during this course.
+\pgfkeys{/course-handouts/.cd,
+instructorname = {Akshar Varma},
+coursename = {CS3000 Algorithms}}
+
+% Add any macros you want below, or put them in a separate file and \input{file}
+% keeping the preamble clean can keep you sane.
+
+\begin{document}
+% Do not change either of the below lines.
+\insertHandoutInfoBox{}
+\ifbool{is-exam}{\input{exam-blurb}} %comment this line only if it throws an error.
+
+% Start adding content from below here.
+
+\newproblem{Most Powerful Immortal in Acydia}{1 + 1 + 8 + 3 + 2}
+In the magical world of Acydia, there are immortals who have become one with the universe by developing an innate understanding of its mysteries. You aspire to become the most powerful immortal of them all and you can, if you can properly utilize \textsc{The Book}.
+
+Each page $p$ of \textsc{The Book} contains a detailed description of a single unique technique you could choose to learn. After that description, $p$ contains a \textit{list} of those pages that each contain a more advanced technique that becomes available to you once you learn the technique described on page $p$.\footnote{\textsc{The Book}, being magical, has some very long pages. Somehow.} Some pages have empty lists signifying an end to the journey and that you have become immortal.  One does end up living forever, but incapable of learning more techniques. And as everyone knows, the more techniques you know, the more powerful you are.
+
+A \textit{path to immortality} starts from the first page of \textsc{The Book} and may proceed to a page on its list.  You can go from a page to another only if the latter is in the list of the former.  For most aspirants, the inability to plan your path to immortality means that one often gets stuck knowing only an average number of techniques with no more advanced techniques to become more powerful.
+
+Model the contents of \textsc{The Book} as a graph and frame ``find a path to immortality that will allow you to learn the largest number of techniques possible'' as a graph problem.
+
+\begin{enumerate}[label=\alph*)]
+\item What representation of graphs is most natural for \textsc{The Book}?
+\item Formalize the graph problem to be solved to become ``the most powerful immortal''.
+\item Present an algorithm for the graph problem you described in the previous subpart.  Provide both pseudocode and a few sentences describing your algorithm.\\
+  (\textit{Hint: Acydia $\longrightarrow$ \textbf{Acy}clic \textbf{Di}graphs. Path to immortality $\longrightarrow$ ordering of techniques.})
+  \item Justify the correctness of your algorithm. Your justification does not need to be long or formal, just convincing.
+  \item Analyze the running time of the algorithm.
+  \end{enumerate}
+
+\textbf{Solution}
+    \begin{enumerate}[label=\alph*)]
+    \item The adjacency list representation is most natural for \textsc{The Book}, where each page stores a list of pages it points to.
+    
+    \item Given a directed acyclic graph $G = (V, E)$ with a starting node (page 1), find the longest path from the starting node to any node in the graph.
+    
+    \item 
+        \begin{algorithm}[H]
+        \caption{Longest Path in DAG}
+        \textbf{Input:}\tab A directed acyclic graph $G = (V, E)$ with starting node $s$ (page 1). \\
+        \textbf{Output:}\tab The longest path from $s$ to any node in $G$
+        \begin{pseudo}
+        $L \gets \text{TopologicalSort}(G)$ \tn{Compute topological ordering}\\
+        \\
+        \textbf{for each} $v \in V$:\\+
+            $dist[v] \gets 0$\\
+            $parent[v] \gets \text{null}$\\-
+        \\
+        $dist[s] \gets 1$\\
+        \\
+        \textbf{for each} $v \in L$ \tn{(in topological order)}:\\+
+            \textbf{for each} edge $(v, u) \in E$:\\+
+                \textbf{if} $dist[v] + 1 > dist[u]$:\\+
+                    $dist[u] \gets dist[v] + 1$\\
+                    $parent[u] \gets v$\\-\\-\\-
+        \\
+        $end \gets \arg\max\{dist[v] : v \in V\}$\\
+        \\
+        \tn{Reconstruct path by following parent pointers}\\
+        $path \gets [\ ]$\\
+        $curr \gets end$\\
+        \textbf{while} $curr \neq \text{null}$:\\+
+            $path.\text{prepend}(curr)$\\
+            $curr \gets parent[curr]$\\-
+        \\
+        \textbf{return} $path$
+        \end{pseudo}
+        \end{algorithm}
+
+    The algorithm first sorts the nodes topologically to ensure a starting order. Then for each node we find the node with the max incoming path length. We then store this in a dp table so that we can run the algorithm in linear time. Finally, we trace back from the node with maximum distance to reconstruct the longest path.
+    
+    \item The algorithm is correct because topological ordering ensures we process each node only after all nodes that can reach it have been processed. This guarantees that when we compute $dist[u]$, we've already found the longest paths to all predecessors of $u$. The parent pointers correctly track the optimal path since we only update them when finding a strictly better path.
+    
+    \item Topological sort takes $O(V + E)$ time. Processing each node in topological order and updating neighbors takes $O(V + E)$ time. Reconstructing the path takes $O(V)$ time. Total running time is $O(V + E)$.
+    \end{enumerate}
+
+
+
+\newproblem{Plane Building as The Sovereign of Dimensions}{1 + 9 + 3 + 2}
+
+You are \textit{The Sovereign}, responsible for maintaining stability across the Dimensions of Reality. You must ensure that disputes between gods, deities, angels, demons, devils and other such cosmic entities do not rupture reality itself. To do this, you need to create separate planes for existence and place the entities such that no two entities who have any disputes end up in the same plane. Of course, you want to accomplish this using as few planes of existence as possible.
+
+Your knowledge allows you to know, for any pair of entities, whether there are any disputes between them (throughout the past, present or future). You also know that the entity embodying \textit{Destruction} has the most disputes, $\mathcal{K}$ of them. Your goal is to determine, for each entity, which plane of existence they would be assigned such that if two entities are assigned to plane $i$, then there is no dispute between them.
+
+\begin{enumerate}[label=\alph*)]
+\item What representation of graphs is most natural for the knowledge you have about disputes?
+\item Present a greedy graph algorithm to assign each entity to a plane of existence using at most $\mathcal{K} + 1$ different planes of existence.  Provide both pseudocode and a few sentences describing your algorithm.
+\item Justify the correctness of your algorithm. Your justification does not need to be long or formal, just convincing.
+  \item Analyze the running time of the algorithm.
+\end{enumerate}
+
+\textbf{Solution}
+    \begin{enumerate}[label=\alph*)]
+    \item The adjacency list representation is most natural for the knowledge about disputes, where each entity stores a list of entities with which it has disputes. An edge is a dispute between two nodes. 
+    
+    \item 
+        \begin{algorithm}[H]
+        \caption{Greedy Graph Coloring for Plane Assignment}
+        \textbf{Input:}\tab An undirected graph $G = (V, E)$ representing entities and disputes. \\
+        \textbf{Output:}\tab A plane assignment for each entity using at most $\mathcal{K} + 1$ planes
+        \begin{pseudo}
+        \tn{Sort vertices by degree in descending order}\\
+        $L \gets \text{SortByDegreeDescending}(V)$\\
+        \\
+        \textbf{for each} $v \in V$:\\+
+            $plane[v] \gets \text{null}$\\-
+        \\
+        \textbf{for each} $v \in L$ \tn{(in descending degree order)}:\\+
+            $forbidden \gets \{\}$ \tn{Set of planes used by neighbors}\\
+            \\
+            \textbf{for each} neighbor $u$ of $v$:\\+
+                \textbf{if} $plane[u] \neq \text{null}$:\\+
+                    $forbidden.\text{add}(plane[u])$\\-\\-
+            \\
+            \tn{Assign the smallest plane not in forbidden set}\\
+            $i \gets 1$\\
+            \textbf{while} $i \in forbidden$:\\+
+                $i \gets i + 1$\\-
+            \\
+            $plane[v] \gets i$\\-
+        \\
+        \textbf{return} $plane$
+        \end{pseudo}
+        \end{algorithm}
+
+    The algorithm sorts entities by their number of disputes (degree) in descending order. Then, for each entity in this order, we assign it to the smallest-numbered plane that doesn't conflict with any of its already-assigned neighbors. This greedy approach ensures we use at most $\mathcal{K} + 1$ planes since any entity has at most $\mathcal{K}$ neighbors blocking at most $\mathcal{K}$ planes.
+    
+    \item The algorithm is correct because when assigning a plane to any entity $v$, at most $\mathcal{K}$ planes can be forbidden (since $v$ has at most $\mathcal{K}$ neighbors). Therefore, with $\mathcal{K} + 1$ planes available, there is always at least one plane available for assignment. The greedy choice of assigning the smallest available plane ensures no conflicts occur, as we only avoid planes already used by neighbors with disputes.
+    
+    \item Sorting vertices by degree takes $O(V \log V)$ time. For each vertex, checking its neighbors and finding the smallest available plane takes $O(\text{degree}(v))$ time. Summing over all vertices, this is $O(E)$. Total running time is $O(V \log V + E)$. 
+    \end{enumerate}
+
+
+\newproblem{Maximizing Scores}{10+10+10}
+Given a directed graph $G = (V,E)$, suppose we have a function $t : V \rightarrow \mathbb{R}^+$ which maps each vertex $v \in V$ to a non-negative value $t(v)$. We say that a vertex $v$ can achieve a \textit{score} $s$ if there exists some node $w \in V$ such that $v$ can reach $w$ and $t(w) = s$. We denote the maximum score that a vertex $v$ can achieve by \[S(v) = \max_{\{w\text{ : }v \text{ can reach }w\}}t(w).\]
+Note that in the problems below, you many not assume any relationship between $|E|$ and $|V|$ beyond the general $|E| \le 2{V\choose2} = O(|V|^2)$. Additionally, you may assume for each part that you have \underline{either} an adjacency matrix or an adjacency list structure for your graph $G$, but not both!
+
+\begin{enumerate}[label=\alph*)]
+    \item Design an $O(|V| + |E|)$ algorithm which, for a given vertex $v \in V$, outputs the value $S(v)$. Briefly justify correctness and time complexity.
+
+        \item Design an algorithm which reports the value $S(v)$ for every vertex $v \in V$ with total time complexity $O(|V| + |E|)$ in the case that $G$ is a DAG (Directed Acyclic Graph). Briefly justify correctness and time complexity.
+        \item Design an algorithm which reports the value $S(v)$ for every vertex $v \in V$ with total time complexity $O(|V| + |E|)$ in the general case that $G$ is a directed graph. Briefly justify correctness and time complexity.
+
+    \textit{Hint: Consider the SCCs in the graph $G$.}
+
+    \end{enumerate}
+    
+\textbf{Solution}
+    \begin{enumerate}[label=\alph*)]
+    \item 
+        \begin{algorithm}[H]
+        \caption{Compute S(v) for Single Vertex}
+        \textbf{Input:}\tab A directed graph $G = (V, E)$, function $t: V \rightarrow \mathbb{R}^+$, vertex $v$. \\
+        \textbf{Output:}\tab The maximum score $S(v)$
+        \begin{pseudo}
+        $visited \gets \{\}$\\
+        $maxScore \gets t(v)$\\
+        $queue \gets [v]$\\
+        \\
+        \textbf{while} $queue$ is not empty:\\+
+            $u \gets queue.\text{dequeue}()$\\
+            \\
+            \textbf{if} $u \in visited$:\\+
+                \textbf{continue}\\-
+            \\
+            $visited.\text{add}(u)$\\
+            $maxScore \gets \max(maxScore, t(u))$\\
+            \\
+            \textbf{for each} edge $(u, w) \in E$:\\+
+                \textbf{if} $w \notin visited$:\\+
+                    $queue.\text{enqueue}(w)$\\-\\-\\-
+        \\
+        \textbf{return} $maxScore$
+        \end{pseudo}
+        \end{algorithm}
+
+    This algorithm performs a BFS from vertex $v$ to explore all reachable vertices, keeping track of the maximum $t$-value encountered. 
+    
+    \textbf{Correctness}: BFS explores all vertices reachable from $v$, and we track the maximum value among them, which is exactly $S(v)$ by definition.
+    
+    \textbf{Time Complexity}: BFS visits each reachable vertex once and examines each outgoing edge once. This takes $O(|V| + |E|)$ time.
+    
+    \item 
+        \begin{algorithm}[H]
+        \caption{Compute S(v) for All Vertices in DAG}
+        \textbf{Input:}\tab A DAG $G = (V, E)$, function $t: V \rightarrow \mathbb{R}^+$. \\
+        \textbf{Output:}\tab The maximum score $S(v)$ for all $v \in V$
+        \begin{pseudo}
+        $L \gets \text{TopologicalSort}(G)$ \tn{Process in reverse topological order}\\
+        \\
+        \textbf{for each} $v \in V$:\\+
+            $S[v] \gets t(v)$ \tn{Initialize with own value}\\-
+        \\
+        \textbf{for each} $v \in L$ \tn{(in reverse topological order)}:\\+
+            \textbf{for each} edge $(v, u) \in E$:\\+
+                $S[v] \gets \max(S[v], S[u])$\\-\\-
+        \\
+        \textbf{return} $S$
+        \end{pseudo}
+        \end{algorithm}
+
+    The algorithm processes vertices in reverse topological order (from sinks to sources). For each vertex, we compute its maximum score by taking the maximum of its own value and the maximum scores of all its successors.
+    
+    \textbf{Correctness}: By processing in reverse topological order, when we compute $S[v]$, all vertices reachable from $v$ have already been processed. Since $S[u]$ contains the maximum value reachable from $u$, taking $\max(t(v), \max_{\text{successors } u} S[u])$ gives us the maximum value reachable from $v$.
+    
+    \textbf{Time Complexity}: Topological sort takes $O(|V| + |E|)$. Processing each vertex and its outgoing edges takes $O(|V| + |E|)$. Total time is $O(|V| + |E|)$.
+    
+    \item 
+        \begin{algorithm}[H]
+        \caption{Compute S(v) for All Vertices in General Directed Graph}
+        \textbf{Input:}\tab A directed graph $G = (V, E)$, function $t: V \rightarrow \mathbb{R}^+$. \\
+        \textbf{Output:}\tab The maximum score $S(v)$ for all $v \in V$
+        \begin{pseudo}
+        \tn{Step 1: Find all SCCs}\\
+        $SCCs \gets \text{TarjanSCC}(G)$\\
+        \\
+        \tn{Step 2: Build condensation graph}\\
+        $G_{SCC} \gets \text{CondensationGraph}(G, SCCs)$\\
+        \\
+        \tn{Step 3: Compute max value within each SCC}\\
+        \textbf{for each} $C \in SCCs$:\\+
+            $maxInSCC[C] \gets \max_{v \in C} t(v)$\\-
+        \\
+        \tn{Step 4: Compute max scores in condensation DAG}\\
+        $L \gets \text{TopologicalSort}(G_{SCC})$\\
+        \\
+        \textbf{for each} $C \in SCCs$:\\+
+            $S_{SCC}[C] \gets maxInSCC[C]$\\-
+        \\
+        \textbf{for each} $C \in L$ \tn{(in reverse topological order)}:\\+
+            \textbf{for each} edge $(C, C') \in G_{SCC}$:\\+
+                $S_{SCC}[C] \gets \max(S_{SCC}[C], S_{SCC}[C'])$\\-\\-
+        \\
+        \tn{Step 5: Assign scores to original vertices}\\
+        \textbf{for each} $v \in V$:\\+
+            $C \gets \text{SCC containing } v$\\
+            $S[v] \gets S_{SCC}[C]$\\-
+        \\
+        \textbf{return} $S$
+        \end{pseudo}
+        \end{algorithm}
+
+    The algorithm first identifies strongly connected components (SCCs), which are maximal sets of mutually reachable vertices. Within an SCC, all vertices can reach each other, so they all have the same maximum score. We build a condensation graph where each SCC becomes a single node, creating a DAG. We then apply the DAG algorithm from part (b) on this condensation graph.
+    
+    \textbf{Correctness}: Vertices in the same SCC can reach each other and thus reach the same set of vertices, so they have identical $S$ values. The condensation graph is a DAG, and we correctly compute maximum reachable values in this DAG using the approach from part (b). Each original vertex gets the score of its SCC.
+    
+    \textbf{Time Complexity}: Tarjan's algorithm finds SCCs in $O(|V| + |E|)$. Building the condensation graph takes $O(|V| + |E|)$. Computing maximum values within SCCs takes $O(|V|)$. The topological sort and DP on the condensation graph takes $O(|V| + |E|)$ since the condensation has at most $|V|$ nodes and $|E|$ edges. Total time is $O(|V| + |E|)$.
+    \end{enumerate}
+
+\end{document}
