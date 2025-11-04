@@ -58,7 +58,7 @@ Model the contents of \textsc{The Book} as a graph and frame ``find a path to im
   \item Analyze the running time of the algorithm.
   \end{enumerate}
 
-\textbf{Solution}
+ \textbf{Solution}
     \begin{enumerate}[label=\alph*)]
     \item The adjacency list representation is most natural for \textsc{The Book}, where each page stores a list of pages it points to.
     
@@ -122,8 +122,9 @@ Your knowledge allows you to know, for any pair of entities, whether there are a
 \textbf{Solution}
     \begin{enumerate}[label=\alph*)]
     \item The adjacency list representation is most natural for the knowledge about disputes, where each entity stores a list of entities with which it has disputes. An edge is a dispute between two nodes. 
+
     
-    \item 
+    \item The algorithm sorts entities by their number of disputes (degree) in descending order. Then, for each entity in this order, we assign it to the smallest-numbered plane that doesn't conflict with any of its already-assigned neighbors. This greedy approach ensures we use at most $\mathcal{K} + 1$ planes since any entity has at most $\mathcal{K}$ neighbors blocking at most $\mathcal{K}$ planes.
         \begin{algorithm}[H]
         \caption{Greedy Graph Coloring for Plane Assignment}
         \textbf{Input:}\tab An undirected graph $G = (V, E)$ representing entities and disputes. \\
@@ -152,10 +153,9 @@ Your knowledge allows you to know, for any pair of entities, whether there are a
         \textbf{return} $plane$
         \end{pseudo}
         \end{algorithm}
-
-    The algorithm sorts entities by their number of disputes (degree) in descending order. Then, for each entity in this order, we assign it to the smallest-numbered plane that doesn't conflict with any of its already-assigned neighbors. This greedy approach ensures we use at most $\mathcal{K} + 1$ planes since any entity has at most $\mathcal{K}$ neighbors blocking at most $\mathcal{K}$ planes.
     
     \item The algorithm is correct because when assigning a plane to any entity $v$, at most $\mathcal{K}$ planes can be forbidden (since $v$ has at most $\mathcal{K}$ neighbors). Therefore, with $\mathcal{K} + 1$ planes available, there is always at least one plane available for assignment. The greedy choice of assigning the smallest available plane ensures no conflicts occur, as we only avoid planes already used by neighbors with disputes.
+    
     
     \item Sorting vertices by degree takes $O(V \log V)$ time. For each vertex, checking its neighbors and finding the smallest available plane takes $O(\text{degree}(v))$ time. Summing over all vertices, this is $O(E)$. Total running time is $O(V \log V + E)$. 
     \end{enumerate}
@@ -241,17 +241,13 @@ Note that in the problems below, you many not assume any relationship between $|
         \textbf{Input:}\tab A directed graph $G = (V, E)$, function $t: V \rightarrow \mathbb{R}^+$. \\
         \textbf{Output:}\tab The maximum score $S(v)$ for all $v \in V$
         \begin{pseudo}
-        \tn{Step 1: Find all SCCs}\\
         $SCCs \gets \text{TarjanSCC}(G)$\\
         \\
-        \tn{Step 2: Build condensation graph}\\
         $G_{SCC} \gets \text{CondensationGraph}(G, SCCs)$\\
         \\
-        \tn{Step 3: Compute max value within each SCC}\\
         \textbf{for each} $C \in SCCs$:\\+
             $maxInSCC[C] \gets \max_{v \in C} t(v)$\\-
         \\
-        \tn{Step 4: Compute max scores in condensation DAG}\\
         $L \gets \text{TopologicalSort}(G_{SCC})$\\
         \\
         \textbf{for each} $C \in SCCs$:\\+
@@ -261,7 +257,6 @@ Note that in the problems below, you many not assume any relationship between $|
             \textbf{for each} edge $(C, C') \in G_{SCC}$:\\+
                 $S_{SCC}[C] \gets \max(S_{SCC}[C], S_{SCC}[C'])$\\-\\-
         \\
-        \tn{Step 5: Assign scores to original vertices}\\
         \textbf{for each} $v \in V$:\\+
             $C \gets \text{SCC containing } v$\\
             $S[v] \gets S_{SCC}[C]$\\-
@@ -271,7 +266,7 @@ Note that in the problems below, you many not assume any relationship between $|
         \end{algorithm}
 
     The algorithm first identifies strongly connected components (SCCs), which are maximal sets of mutually reachable vertices. Within an SCC, all vertices can reach each other, so they all have the same maximum score. We build a condensation graph where each SCC becomes a single node, creating a DAG. We then apply the DAG algorithm from part (b) on this condensation graph.
-    
+     
     \textbf{Correctness}: Vertices in the same SCC can reach each other and thus reach the same set of vertices, so they have identical $S$ values. The condensation graph is a DAG, and we correctly compute maximum reachable values in this DAG using the approach from part (b). Each original vertex gets the score of its SCC.
     
     \textbf{Time Complexity}: Tarjan's algorithm finds SCCs in $O(|V| + |E|)$. Building the condensation graph takes $O(|V| + |E|)$. Computing maximum values within SCCs takes $O(|V|)$. The topological sort and DP on the condensation graph takes $O(|V| + |E|)$ since the condensation has at most $|V|$ nodes and $|E|$ edges. Total time is $O(|V| + |E|)$.
