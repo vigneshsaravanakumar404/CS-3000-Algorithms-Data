@@ -1,0 +1,177 @@
+\documentclass[11pt, a4paper]{article}
+
+% One of the following is required: problemset, recitation, quiz, exam
+% The following are required: handoutnum, assigneddate.
+% If there is only one date, set both duedate and assigneddate to be the same.
+% Do not change handoutnum or dates
+\usepackage[
+problemset,
+handoutnum=5,
+assigneddate={2 November 2025},duedate={12 November 2025},
+% % Uncomment the line below IF these are solutions
+% solution,
+% % Uncomment the line below IF you are a student submitting solutions
+% student,
+% % Replace with your name
+name={Fill Submitter's Name},
+% Replace with names of all group members who collarborated on this.
+% If unsure about ordering, then you can follow the convention in theory
+% and list names alphabetically by last name.
+groupmembers={Fill collaborators' names},
+math-preamble,graphicspaths={{./images}},
+]{course-handouts}
+
+% Be careful of commas and put text with spaces within {curly braces}
+% Don't use a comma at the end, but do use commas between options.
+% Weird errors occur otherwise, I wasted some time failing to debug those.
+% DO NOT EDIT
+% These are fixed values that should not be changed during this course.
+\pgfkeys{/course-handouts/.cd,
+instructorname = {Akshar Varma},
+coursename = {CS3000 Algorithms}}
+
+% Add any macros you want below, or put them in a separate file and \input{file}
+% keeping the preamble clean can keep you sane.
+
+\begin{document}
+% Do not change either of the below lines.
+\insertHandoutInfoBox{}
+\ifbool{is-exam}{\input{exam-blurb}} %comment this line only if it throws an error.
+
+% Start adding content from below here.
+
+\newproblem{Paths without Cycles}{12+(8+15)=35}
+After having just learned some shortest path algorithms, you want to utilize those ideas to speed up the setup process of the project for another course.\footnote{Humor me and imagine that you do indeed have another course which fits exactly the descripiton I'm making up. The setup process can be compiling a large codebase or training a large neural network or rendering a complex game environment or ...} To still be capable of handling all possible scenarios that might show up, you will model this as the most general possible graph and then apply the best possible shortest path algorithm you can think of for that kind of graph.
+
+You know that any such graph you make will not have cycles and that it will have directed edges. Some parts of the setup must happen earlier compared to certain other parts so there are directed edges. However, there is no looping back to an earlier step. Further, you want to be as general as possible and allow for different edges to have different non-negative weights.
+
+\begin{enumerate}[label=(\alph*)]
+\item While you know that Dijkstra's algorithm using $O(|E|\lg|V|)$ is efficient for non-negatively weighted graphs, your input has the additional constraint that there are no cycles.
+
+  Describe an algorithm (without pseudocode) that runs in $O(|V|+|E|)$ which finds shortest paths from the starting vertex $s$ to every other vertex. Briefly justify the correctness and runtime of your algorithm.
+
+  
+\item Now we look at a more restricted class of graphs. We can assume that there is a distinguished start vertex $s$ which has no incoming edges and a distinguished target vertex $t$ which has no outgoing edges. We will also assume that the setup process proceeds in various phases; so unlike the previous subpart, there are will be no edges between vertices in the same phase. Further, there are incoming edges only from the previous phase and outgoing edges to the next phase. Each phase can be thought of as being alternative configurations or settings for your project. You want to find what's the shortest path from $s$ to $t$. Assume that there are $k$ such phases and each phase $i$ contains vertices $V_{i}$ with $V_{1} = \{s\}$ and $V_{k} = \{t\}$.
+
+  \begin{enumerate}[label=\roman*.]
+  \item Describe an algorithm (without pseudocode) that runs in $O(|V|+|E|)$ and finds all the vertices in each of the phases. That is, it splits the graph into the various phases involved. Briefly justify the correctness and runtime of your algorithm.
+      \item Assume that you now have access to the phases $V_{1}, V_{2}, \dots, V_{k}$ with $V_{M}$ having the maximum vertices. Give pseudocode for an algorithm that runs in $O(k|V_{M}|^{2}) = O(k |E|)$ time which takes as input the edges $E$, the source vertex $s$, the target vertex $t$, the vertices in each phase $\{V_{1}, V_{2}, \dots, V_{k}\}$ and finds the shortest paths from $s$ to $t$. Make sure to first provide a simple English description describing the high level approach before the pseudocode. You can assume that you can access vertices as $(p, j)$ for the vertex $j$ from phase $p$. Briefly justify the correctness and runtime of your algorithm.
+
+      \end{enumerate}
+  
+
+  
+\end{enumerate}
+
+\fbox{\parbox{\textwidth}{
+\textbf{(a) Shortest Paths in DAG - O(|V| + |E|) Algorithm}
+
+\textbf{Algorithm:} First, compute a topological ordering of the vertices using DFS in O(|V| + |E|) time. Initialize distance d[s] = 0 and d[v] = $\infty$ for all other vertices. Process vertices in topological order: for each vertex u, relax all outgoing edges (u,v) by setting d[v] = min(d[v], d[u] + w(u,v)).
+
+\textbf{Correctness:} In a topological ordering, when we process vertex v, all vertices u with paths to v have already been processed. Since there are no cycles, the shortest path to v must come through one of these predecessors. Therefore, relaxing edges in topological order correctly computes shortest paths.
+
+\textbf{Runtime:} Topological sort takes O(|V| + |E|). Processing each vertex and relaxing edges takes O(|V| + |E|). Total: O(|V| + |E|).
+}}
+
+\vspace{1em}
+
+\fbox{\parbox{\textwidth}{
+\textbf{(b)(i) Finding Phases - O(|V| + |E|) Algorithm}
+
+\textbf{Algorithm:} Use BFS starting from s. Initialize phase[s] = 1. For each vertex v, set phase[v] = 1 + max\{phase[u] : (u,v) $\in$ E\}. This can be computed by processing vertices in topological order, where each vertex's phase is one more than the maximum phase among its predecessors.
+
+\textbf{Correctness:} Since edges only go forward between phases and s has no incoming edges, the phase of each vertex equals the length of the longest path from s (in edge count). This correctly partitions vertices into phases.
+
+\textbf{Runtime:} Topological sort is O(|V| + |E|), and computing phases by examining each edge once is O(|E|). Total: O(|V| + |E|).
+}}
+
+\vspace{1em}
+
+\fbox{\parbox{\textwidth}{
+\textbf{(b)(ii) Shortest Path with Known Phases - O(k|V$_M$|²) Pseudocode}
+
+\textbf{Description:} Use dynamic programming on phases. For each phase i from 1 to k, compute shortest distances to all vertices in $V_i$ based on distances from $V_{i-1}$. Since edges only exist between consecutive phases, we only need to consider edges from phase i-1 to phase i.
+
+\textbf{Pseudocode:}
+\begin{verbatim}
+ShortestPathByPhases(E, s, t, {V_1, ..., V_k}):
+    dist[1][s] = 0
+    for each phase i from 2 to k:
+        for each vertex v in V_i:
+            dist[i][v] = infinity
+            for each vertex u in V_{i-1}:
+                if (u,v) in E:
+                    dist[i][v] = min(dist[i][v], dist[i-1][u] + w(u,v))
+    return dist[k][t]
+\end{verbatim}
+
+\textbf{Correctness:} Since edges only go between consecutive phases, the shortest path to any vertex in phase i must come from phase i-1. The DP correctly computes minimum over all such paths.
+
+\textbf{Runtime:} For each of k phases, we check at most |V$_{i-1}$| $\times$ |V$_i$| $\leq$ |V$_M$|² edges. Total: O(k|V$_M$|²). Since each phase has at most |V$_M$| vertices and edges only go forward, |E| $\leq$ k|V$_M$|², so this is O(k|E|).
+}}
+
+\newproblem{College Code Challenge Championships Combined Computations}{5+5+5}
+Teams of two college students participate in the C\textsuperscript{4}: College Code Challenge Championships. There are a total of $n$ coding challenges; you and your teammate are separated and start attempting different challenges $s_{a}$ and $s_{b}$ but have the same destination $t$. Once the current coding challenge has been solved, there is a choose of one out of four possible challenges to continue. Each of the four choices for next code challenge comes with a challenge rating $w(u, v) \geq 0$ for going from current challenge $u$ to next challenge $v$. This is some measure of how existing code/algorithms/knowledge of $u$ can be reused for $v$ and so how much time it will take.\footnote{Your machines (and you) cannot remember what you did before $u$, so every earlier code/algorithm is useless, so the weight only depends on $u$ and $v$.}
+
+However, since this is a team event, you cannot actually proceed to the next coding challenge until your teammate also completes their current coding challenge. For example, if team member $A$ needs to use edges with weights 5 and 3 while team member $B$ needs to use edges with weights 2 and 4, then the actual time it takes the team to cross two edges (different edges for each member, but same number of edges) is $\max(5, 2) + \max(3, 4)=5+4 = 9$.
+
+To win the championship, both members of a team needs to get from their respective starting points to the target state $t$ as quickly as possible; the first team with both members to reach $t$ wins. If one of the members reaches $t$ before the other, then all of the future edge weights of the member already at $t$ can be considered 0 for the purpose of the maximum calculation. Note that we assume that before a member reaches $t$, there is no option for one member to ``hold and wait'' for a few rounds while the other member gets to a ``better'' position; so no staying put while the other team member moves unless you are staying put at $t$.
+
+Assume that you are given the directed graph $G=(V, E)$ of code challenges $V$ as vertices and the available edges $E$ for moving from code challenge $u$ to code challenge $v$. You also have the set of weights for each edge $\{w(u, v)~|~ (u, v) \in E\}$. You are also given as input the two source vertices $s_{a}$, $s_{b}$ and the target vertex $t$. Do not design a new algorithm for this problem; instead modify the input to create a new input graph so that you can apply a known algorithm as is on the newly created graph and still solve the original problem for the original graph.
+
+\begin{enumerate}[label=(\alph*)]
+\item Construct a new weighted graph $G'=(V', E', w')$. Describe what the vertices $V'$ and edges $E'$ represent. Also describe what the edge weights are used for edges in $E'$.
+
+  \hint{The current state of a team can be thought of as being a pair of vertices representing where team member $A$ is and where team member $B$ is.}
+  \item Describe an algorithm from class that can be run as is on input $G'$ as well as anything else required as input for your algorithm. This algorithm on such an input should allow you to solve the problem for graph $G$. You should explain correctness of your algorithm, particularly, how using that algorithm on $G'$ will allow solving the orignal problem in $G$.
+
+  \item State and analyze the runtime of the algorithm.
+\end{enumerate}
+
+\newproblem{Teleporting Theoreticianoids' Trusted Trees}{$3+7+10+10+10 = 40$}
+By the 45\textsuperscript{th} century, an extraterrestial species, The Theoreticianoids, has spread throughout the Milky Way Galaxy. On the 142\textsuperscript{nd} day of the first year of the third decade, the Theoreticianoids finished construction of the \textit{Portal Operating Dyson Spheres} (PODS) infrastructure which will allow for instantaneous teleportation. These PODS, which have been built near $p$ planets (billions of them), may be thousands of light years apart. While they have not yet been made operational, the resources needed for safe and continuous operation of a portal between any particular pair of PODS can easily be calculated. The Theoreticianoids have determined that safe operation between two portals $x$ and $y$ requires solving $c(x, y)$ Navier-Stokes type equations for smooth (and safe) travel through interstellar cosmic turbulence.
+
+Since solving these equations with the precision needed for teleportation is hard even for an advanced species like the Theoreticianoids, they want to solve \emph{as few Navier-Stokes type equations} as possible (summed over all portals that they make operational). At the same time, they want to ensure that enough portals are operational so that travel from any source planet to any destination planet is possible via some sequence of portals. Note that portals allow travel in both directions when operational at the same cost, so $c(x,y) = c(y,x)$ for all $x, y$.
+
+\begin{enumerate}[label=(\alph*)]
+\item Two Theoreticianoids, Truussa and Thraux find a partially degraded filmbook for an ancient text ``Algorithm Design'' and see that their problem sounds like a graph problem. However, there is some disagreement on which graph problem it is. Truussa thinks it is equivalent to the \textsc{Shortest Path} problem while Thraux thinks it is equivalent to the \textsc{Minimum Spanning Tree} problem. Briefly explain why Thraux is correct and describe what the corresponding graph, vertices, edges, and edge weights are for the problem.
+
+
+\item After agreeing that they need to solve the \textsc{Minimum Spanning Tree} problem, Truussa and Thraux each come up with a minimum spanning tree. However, the two trees are different in some edges. Due to degradation of the filmbook, the detail that there can be multiple minimum spanning trees if the edges' weights are not distinct was missed. For the sake of long-lasting safety of their teleportation network, they have decided to access the dream state of someone familiar with the original textbook (yeah, that's you). In your bizarre dream, aware of all of the above, you need to convince the two Theoreticianoids that they both found valid minimum spanning trees.
+
+Let the two MSTs be denoted as $T_1$ and $T_2$, respectively.
+Let $E_1 = T_1 \setminus T_2$ and $E_2 = T_2 \setminus T_1$.\footnote{For any two sets $X$ and $Y$, $X \setminus Y$ is the set that consists of all elements in $X$ that are not in $Y$.  So, $E_1$ is the set of all edges in $T_1$ that are not in $T_2$.} Note that $E_1 \neq \emptyset$, $E_2 \neq \emptyset$, and $E_1 \cap E_2 = \emptyset$.
+Let $e_1$ be the smallest weight edge in $E_1$. Show that there is an edge $e_2 \in E_2$ such that $c(e_1) = c(e_2)$ and $(T_1 \setminus \{e_1\}) \cup \{e_2\}$ is also a minimum spanning tree.
+
+\hint{Follow the proof of the Cut Property of MSTs.}
+
+
+
+\item Before your dream becomes a nightmare, use the result from part (b) to prove that there is a sequence of MSTs starting at $T_1$ and ending at $T_2$, and each pair of consecutive MSTs in the sequence differ by exactly one edge (the other $|V|-2$ edges match). You should use proof by induction and induct on $|E_1|$ (the number of edges in which the trees \textit{differ}).
+
+
+
+\item Truussa's friend Thricrails has just found that the cost $c(u, v)$ for specific PODS $u$ and $v$ was calculated incorrectly and is, in fact, lower than what it was thought to be.  Now, Truussa, Thricrails and Thraux are loath to invoke the fastest MST algorithms to recompute the whole tree again.  They have entered your dream state again and want you to help them design a linear time algorithm (in terms of $p$, the number of nodes) which will update the MST $T$ that Truussa already found in part (b) to potentially utilize this new edge $(u, v)$. The algorithm should take in the original graph $G$, the MST $T$ and an edge $e=(u, v)$, whose cost has decreased from $c(u,v)$ to $c'(u,v)$ and output an MST $T'$ for the graph $G'$ which is identical to $G$ except that the cost of edge $(u,v)$ is $c'(u,v)$.
+
+You need not give detailed pseudocode but all the steps of your algorithm should be clear.  You can invoke any algorithm we have studied in class directly, without any further explanation.
+
+
+\item Although you hoped you were done with these weird dreams, your Theoreticianoid friends show up in your dream state the next night because a distant star going supernova has destabilized a particular portal connection that was in use and now they want you to quickly update their MST to maintain teleportation capabilities. Give a linear-time algorithm (in terms of $p$), which takes as input $G$, MST $T$, and an existing edge $e \in E$, and outputs an MST $T'$ for the graph $G' = (V, E - \{e\})$ obtained by removing $e$ from $G$. You can assume that $G$ stays connected even if that particular portal connection is removed.
+
+You need not give detailed pseudocode but all the steps of your algorithm should be clear.  You can invoke any algorithm we have studied in class directly, without any further explanation.
+
+  
+\end{enumerate}
+
+\newproblem{CESs}{5+8+12=25}
+A CES of an undirected graph $G=(V, E\})$ is the smallest subset of edges such that must be removed to make $G$ acyclic.\footnote{A fun aspect about making up problems is that I can make up names and then I can claim totally made up connections between things. If a cess is a tax usually earmarked for a certain purpose, then a CES is a ``tax'' in edges to be payed for the purpose of making a graph acyclic.} The more general form of CES is for a weighted undirected graphs $G=(V, E, \{w(e)\})$ where the CES is defined as the minimum \textit{weight} subset of edges that must be removed to make $G$ acyclic.
+
+Note: It is not guaranteed that the graphs are connected. They may in fact have $c>1$ connected components.
+
+\begin{enumerate}[label=(\alph*)]
+\item Explain why there is an extremely easy and efficient algorithm for finding the \textit{size} of any CES for an unidrected graph $G=(V, E)$. In fact, you don't even need to look at the graph at all if you know the size of $V$ and $E$ as well as how many components there are in the graph!
+  \item Describe an algorithm (without pseudocode) which finds the CES (and not just the size of it) of an undirected graph $G=(V, E)$ in $O(|V| + |E|)$. Note that you actually need to output the CES and not just its size. Briefly justify the correctness and runtime of your algorithm.
+  \item Describe an algorithm (without pseudocode) to find the CES of a weighted undirected graph $G=(V, E, \{w(e)\})$ in $O(|E|\lg|V|)$. Briefly justify the correctness and runtime of your algorithm.
+  \end{enumerate}
+
+\end{document}

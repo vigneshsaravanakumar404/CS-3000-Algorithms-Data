@@ -1,0 +1,319 @@
+\documentclass[11pt, a4paper]{article}
+
+% One of the following is required: problemset, recitation, quiz, exam
+% The following are required: handoutnum, assigneddate.
+% If there is only one date, set both duedate and assigneddate to be the same.
+% Do not change handoutnum or dates
+\usepackage[
+problemset,
+handoutnum=6,
+assigneddate={17 November 2025},duedate={4 December 2025},
+% % Uncomment the line below IF these are solutions
+% solution,
+% % Uncomment the line below IF you are a student submitting solutions
+% student,
+% % Replace with your name
+name={Fill Submitter's Name},
+% Replace with names of all group members who collarborated on this.
+% If unsure about ordering, then you can follow the convention in theory
+% and list names alphabetically by last name.
+groupmembers={Fill collaborators' names},
+math-preamble,graphicspaths={{./images}},
+]{course-handouts}
+
+% Be careful of commas and put text with spaces within {curly braces}
+% Don't use a comma at the end, but do use commas between options.
+% Weird errors occur otherwise, I wasted some time failing to debug those.
+% DO NOT EDIT
+% These are fixed values that should not be changed during this course.
+\pgfkeys{/course-handouts/.cd,
+instructorname = {Akshar Varma},
+coursename = {CS3000 Algorithms}}
+
+% Add any macros you want below, or put them in a separate file and \input{file}
+% keeping the preamble clean can keep you sane.
+
+\begin{document}
+% Do not change either of the below lines.
+\insertHandoutInfoBox{}
+\ifbool{is-exam}{\input{exam-blurb}} %comment this line only if it throws an error.
+
+% Start adding content from below here.
+\section{Guidelines}
+\label{sec:tools}
+This problem set focuses on reductions to some versatile and powerful problems that you can think of as tools in your toolkit. You can use the following as black box tools throughout this problem set. In fact, that's the goal of this problem set: reduce the given problem to one of these and extract a solution to your problem from the solution to these (available via a black box algorithm). This is primarily what we are looking for in your solutions.
+
+You need to briefly justify that the reduction is correct. That is, you need to justify why the tool allows you to solve your original problem.
+
+For each reduction, you must also analyze the time complexity of the following three steps:
+
+\begin{enumerate}[label=(\alph*)
+\item The reduction: What is the time complexity of transforming the input into the input acceptable for the tool
+\item Tool runtime: What is the time complexity of running the black box algorithm on the input you just created?
+\item Extracting solution: What is the time complexity of extracting the actual solution you are interested in from the output of the black box algorithm?
+\end{enumerate}
+
+Note: The tools are presented in order of increasing power and generality. Every problem can be solved using the last tool, but the earlier tools run faster and you should aim to reduce to the fastest (which is always the least powerful) of the tools. For full credit you should reduce to the fastest tool possible.
+
+\subsection{Tool 1: Maximum Flow and Minimum Cut}
+\label{sec:maximum-flow-minimum-cut}
+Given a directed graph $G=(V, E)$ with non-negative integer capacities $c:E\to \NN^{\geq 0}$ on every edge and specific start and end vertices $s$ and $t$, there is an efficient algorithm to find integer flows $f:E\to \NN^{\geq 0}$ which satisfy conservation of flow and capacity limits. There is an $O(|V|\cdot |E|)$ algorithm to find the maximum flow $f$, the flow value $|f|$, the minimum cut $(A, B)$ and the cut capacity $\|A, B\|$.
+
+Additionally, you can also have the following extensions with no change to time complexity:
+\begin{itemize}[]
+\item Capacities on vertices
+\item Multiple sources and/or sinks.
+\item Circulations: Supply and Demands nodes.
+\item Lower bounds on flow in addition to the upper bound capacities.
+\end{itemize}
+
+While these extensions can in turn be reduced to the standard maximum flow minimum cut problem, sometimes it is easier to understand the reduction if these extensions are used. So it is perfectly acceptable to keep them in your reduction.
+
+\subsection{Minimum Cost Circulations}
+\label{sec:minimum-cost-circulations}
+Given the following:
+\begin{enumerate}[]
+\item Directed graph $G=(V, E)$.
+\item Lower bounds on flows through an edge $e$, given by $\ell(e) : E \to \NN^{\geq 0}$.
+\item Upper bounds on flows through an edge $e$, given by $u(e) : E \to \NN^{\geq 0}$.
+\item Every lower bound is at most equal to the upper bound: $\ell(e) \leq u(e)$ for all $e$.
+\item Price to send unit flow through an edge $e$, given by $p(e) : E \to \ZZ$.
+\item Demands on vertices given by $d(v) : V \to \ZZ$.
+\end{enumerate}
+
+The goal is to find a flow $f:E\to \NN^{\geq 0}$ that satisfies the following constraints and minimizes the total cost: $\sum_{e\in E}^{}p(e) \cdot f(e)$:
+\begin{enumerate}[label=(\alph*)]
+\item All flow values must satisfy lower and upper bounds: $\ell(e) \leq f(e) \leq u(e)$.
+\item Positive demand vertices create flow while negative flow vertices absorb flow.
+\item Flow conservation means: $\sum_{e=(u, v)\in E}^{}f(e) - \sum_{e'=(v, w)\in E}^{}f(e') = d(v)$ holds for every $v\in V$.
+\item Flow $f(e)$ through an edge $e$ costs $c(e) \cdot f(e)$.
+\end{enumerate}
+
+The above problem can be solved efficiently such that the flow is integral for every edge: $f(e) \in \NN^{\geq 0}$. There is an $O\Big(|V|^{2}\cdot |E| \cdot \min\big(\log(|V| \cdot C), |E| \log |V|\big)\Big)$ runtime where $C$ is the largest value among all lower and upper capacity bounds, as well as the prices.
+
+A variant also allows solving the minimum cost maximum flow problem: Among all maximum flows, find the one with the minimum flow. This is only applicable when the demands aren't fixed and we are finding what is the largest possible demand possible. Essentially, we solve the minimum cost circulation problem $O(\log D)$ times where $D$ is the maximum flow value we find.
+
+\subsection{Linear Programs}
+\label{sec:linear-programs}
+There is an efficient algorithm that finds a vector $x$ which maximizes $c^Tx$ subject to $Ax \leq b$, $x \geq 0$.
+
+In non vector language, there is an efficient algorithm which finds $x_1, x_2, \dots, x_n$ that maximizes $\sum_{i=j}^{n}c_jx_j$ such that $\sum_{j=1}^{n}a_{ij}x_j \leq b_i$ for all $1 \leq i \leq m$ and $x_j \geq 0$ for all $1 \leq j \leq n$.
+
+Linear programs can be solved in $O(n^{3+\nicefrac{1}{18}}\cdot m \log C)$ time where $n$ is the number of variables, $m$ is the number of constraints and $C$ is the largest number among $a_{ij}$, $c_{j}$ and $b_{i}$.
+
+If we limit the variables in linear programs to have integer values, then it becomes integer linear programming, which is much harder to solve than linear programming. However, it is still feasible for small number of variables and constraints. In this case, there is no need to mention a runtime since in the worst case it will be exponential.
+
+\clearpage
+
+\newproblem{Reductions}{}
+\begin{enumerate}[label=(\alph*)]
+\item \textbf{CS @ Uskees:} You are helping the Department of Computer Science at Uskees University create a new flexible curriculum with a complex set of graduation requirements. The department offers $n$ different courses, and there are $m$ different requirements. Each requirement specifies a subset of the $n$ courses and the number of courses that must be taken from that subset. The subsets for different requirements may overlap, but each course can be used to satisfy at most one requirement.
+
+  For example, suppose there are $n = 5$ courses $A, B, C, D, E$ and $m = 2$ graduation requirements:
+  \begin{itemize}[]
+  \item You must take at least 2 courses from the subset $\{A, B, C\}$.
+  \item You must take at least 2 courses from the subset $\{C, D, E\}$.
+  \end{itemize}
+  A student who has only taken courses $B, C, D$ cannot graduate, but a student who has taken either $A, B, C, D$ or $B, C, D, E$ can graduate.
+
+  Given $m$ requirements and the list of courses a student has taken, determine whether the student can graduate or not.
+
+\subsection*{1(a) CS @ Uskees}
+
+\textbf{Solution:}
+
+\textbf{Tool Selection:} I'll use Tool 1, Maximum Flow, leveraging the bipartite matching structure of the problem.
+
+\textbf{Justification:} The core challenge here is matching courses to requirements where each course can only fulfill one requirement, but requirements need multiple courses. This is a many-to-one assignment problem that naturally fits the flow framework, where we can control how many ``units'' each requirement receives through edge capacities.
+
+\textbf{Reduction Construction:} We build a flow network as follows. Start by creating a source $s$ and sink $t$. For each course $c$ that the student has completed, add a vertex. For each graduation requirement $R_i$, add a vertex. Connect $s$ to every course vertex with an edge of capacity 1, enforcing that each course contributes to at most one requirement. For each course $c$ and requirement $R_i$, if $c$ belongs to the subset $S_i$ associated with $R_i$, add an edge from $c$ to $R_i$ with capacity 1. Finally, connect each requirement $R_i$ to $t$ with capacity $k_i$, where $k_i$ is the number of courses needed for that requirement. Run max flow and check if the flow value equals $\sum_{i=1}^{m} k_i$.
+
+\textbf{Time Complexity:} Building the graph requires scanning each requirement's subset against the student's courses, giving $O(n \cdot m)$ for the reduction. The flow network has $|V| = O(n + m)$ vertices and $|E| = O(n \cdot m)$ edges, so the tool runs in $O(|V| \cdot |E|) = O((n+m) \cdot nm)$. Extraction is $O(1)$ since we just compare the max flow value to the target sum. The dominant cost is the tool runtime. 
+
+
+\item \textbf{Hackers (not the 1995 film):} A group of hackers have stolen Taylor Swift's recent 100-minute recording of her 2012 song ``All Too Well''. Rather than the hackers releasing the song themselves, they want to sell the song to a tabloid. You've been contracted by her team to stop the song from getting sold to the tabloids by the hackers.
+
+To inform the tabloids that they have the song, the hackers plan to tell all of their trusted contacts and have the message continue to travel by word-of-mouth through trusted contacts to the tabloids.
+
+Taylor's team has moved swiftly and compiled a directed graph representing the network of trusted contacts between the hackers and the tabloids. Each node is either a hacker, tabloid, or intermediary (and exactly one of the three). An edge $(u, v)$ exists if $v$ is a trusted contact of $u$.
+
+However, no one in this line of work is really that trustworthy, and thus, the team is able to use their influence to break the trust between any pair of contacts (i.e. remove any edge from the graph). Breaking the trust between a pair of contacts is time consuming, which is where you come in. Your task is to find a smallest set of pairs $S$, where if for every $(u, v) \in S$ $u$ no longer trusted $v$, then there would be no channel of trusted contacts from any hacker to any tabloid.
+
+\subsection*{1(b) Hackers (not the 1995 film)}
+
+\textbf{Solution:}
+
+\textbf{Tool Selection:} I'll use Tool 1, Maximum Flow, specifically utilizing the Min Cut property.
+
+\textbf{Justification:} We need to find the minimum number of edges whose removal disconnects all hackers from all tabloids. The Max-Flow Min-Cut theorem tells us that the minimum cut capacity equals the maximum flow value, and when all edges have unit capacity, the min cut gives us exactly the smallest set of edges to remove.
+
+\textbf{Reduction Construction:} Build a flow network starting with the original contact graph. Set the capacity of every original edge to 1 since each edge removal has equal cost. Introduce a super-source $S$ connected to every hacker node with edges of capacity $\infty$ (these edges should never be cut). Similarly, introduce a super-sink $T$ and connect every tabloid node to $T$ with edges of capacity $\infty$. Compute the maximum flow from $S$ to $T$. The algorithm also produces the minimum cut $(A, B)$ where $S \in A$ and $T \in B$. The solution set $S$ consists of all original edges $(u,v)$ where $u \in A$ and $v \in B$.
+
+\textbf{Time Complexity:} The reduction copies the graph and adds at most $O(V)$ new edges for super-source and super-sink connections, so it takes $O(V + E)$. The max flow algorithm runs in $O(V \cdot E)$. Extracting the cut edges requires examining each edge once, taking $O(E)$. Overall complexity is $O(V \cdot E)$. 
+
+
+
+\item \textbf{Black and White:} You are given an $n\times n$ square grid, some of whose squares are colored black and the rest white. Describe and analyze an algorithm to determine whether tokens can be placed on the grid so that:
+  \begin{itemize}[]
+  \item every token is on a white square
+  \item every row of the grid contains exactly one token; and
+  \item every column of the grid contains exactly one token.
+  \end{itemize}
+  Your input is a boolean two dimensional array which has a value of $True$ in cell $(i, j)$ if that cell is a white cell and $False$ otherwise. Your output should be a boolean as well. As an example, \cref{fig:black-white-grid-with-tokens} should lead your algorithm to return $True$.
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.25\textwidth]{black-white-grid-with-tokens-flow-problem.png}
+    \caption{Example grid which should result in your algorithm returning $True$}
+    \label{fig:black-white-grid-with-tokens}
+  \end{figure}
+
+\subsection*{1(c) Black and White}
+
+\textbf{Solution:}
+
+\textbf{Tool Selection:} I'll use Tool 1, Maximum Flow, treating this as a bipartite perfect matching problem.
+
+\textbf{Justification:} Placing exactly one token per row and one per column on white squares is equivalent to finding a perfect matching between rows and columns, where an edge exists only if the corresponding cell is white. Maximum flow can solve bipartite matching by checking if the max flow equals the number of nodes on one side.
+
+\textbf{Reduction Construction:} Create a bipartite graph with row nodes $\{r_1, r_2, \ldots, r_n\}$ on one side and column nodes $\{c_1, c_2, \ldots, c_n\}$ on the other. Add a source $s$ and sink $t$. Draw an edge from $s$ to each row node $r_i$ with capacity 1. Draw an edge from each column node $c_j$ to $t$ with capacity 1. For each cell $(i, j)$ in the grid, if the cell is white (i.e., the boolean array is True), add an edge from $r_i$ to $c_j$ with capacity 1. Run maximum flow. If the max flow value is $n$, return True; otherwise return False.
+
+\textbf{Time Complexity:} Constructing the network requires iterating through all $n^2$ cells, so the reduction takes $O(n^2)$. The network has $V = 2n + 2$ vertices and at most $E = n^2 + 2n$ edges. The tool runs in $O(V \cdot E) = O(n \cdot n^2) = O(n^3)$. Extraction is $O(1)$ as we simply check if the flow equals $n$. Total runtime is $O(n^3)$. 
+
+  
+
+\item \textbf{Colorful edges:} Suppose you are given an arbitrary directed graph $G = (V, E)$ with arbitrary edge weights $w: E \to \RR$, and two special vertices $s, t$. Each edge in $G$ is colored either red, white, or blue to indicate how you are permitted to modify its weight:
+  \begin{itemize}[]
+  \item You may increase, but not decrease, the length of any red edge.
+  \item You may decrease, but not increase, the length of any blue edge.
+  \item You may not change the length of any black edge.
+  \end{itemize}
+  Your task is to modify the edge weights, subject to the color constraints, so that every path from $s$ to $t$ has exactly the same length. Both the given weights and the new weights of the edges can be positive, negative, or zero. Assume every edge in G lies on at least one path from s to t, and that G has no isolated vertices (it is connected).
+
+\subsection*{1(d) Colorful edges}
+
+\textbf{Solution:}
+
+\textbf{Tool Selection:} I'll use Tool 3, Linear Programming.
+
+\textbf{Justification:} For all paths from $s$ to $t$ to have equal length, we need consistent ``potentials'' at each vertex. If we assign a distance value $d(v)$ to each vertex representing the path length from $s$ to $v$, then the new weight of edge $(u,v)$ must equal $d(v) - d(u)$. The color constraints translate directly into linear inequalities on these distance variables, making LP the natural choice.
+
+\textbf{Reduction Construction:} Introduce a variable $d(v)$ for each vertex $v \in V$, representing the distance from $s$ to $v$. Set $d(s) = 0$ as a constraint. For each edge $(u, v)$ with original weight $w(u,v)$, add constraints based on its color:
+\begin{itemize}
+    \item Red (can only increase): The new weight $w'(u,v) = d(v) - d(u)$ must satisfy $d(v) - d(u) \geq w(u,v)$.
+    \item Blue (can only decrease): The new weight must satisfy $d(v) - d(u) \leq w(u,v)$.
+    \item Black (cannot change): We need $d(v) - d(u) = w(u,v)$, which becomes two constraints: $d(v) - d(u) \leq w(u,v)$ and $d(v) - d(u) \geq w(u,v)$.
+\end{itemize}
+Run the LP to check feasibility. If feasible, compute new weights as $w'(u,v) = d(v) - d(u)$.
+
+\textbf{Time Complexity:} The reduction generates $O(E)$ constraints and $O(V)$ variables, taking $O(E)$ time. The LP solver runs in $O(V^{3+\frac{1}{18}} \cdot E \log C)$ where $C$ bounds the weight magnitudes. Extracting the new weights requires $O(E)$ arithmetic operations. The LP solver dominates, giving total complexity $O(V^{3+\frac{1}{18}} \cdot E \log C)$. 
+
+  
+\item \textbf{Blue Bikes Business:} Having just joined the Blue Bikes Business your manager tells you that you are responsible for ensuring that the bike supply satisfies the demand at each location. If not, you need to figure out whether the bikes can be transported around so that popular stations have bikes supplied to them from less popular ones. If the current infrastructure is insufficient, then you need to recommend buying more transport vehicles which is costly.
+
+Thankfully, your colleagues have surveyed bike stations and can give you all the necessary data. At some given moment, let $d(v)$ denote the number of additional bikes needed at station $v$. This can be less than 0, in which that station can give up that many bikes to a different station. For some pairs of stations, $u, v$, there is a van available to transport $c(u,v)$ bikes from $u$ to $v$. This transport procedure and the surveyed values for $d(v)$ are valid for 2 hour periods and you have such values for every two hour period starting at 8 in the morning until 6 in the evening.
+
+Give an algorithm to determine whether the vans can tranport bikes around to satisfy the demand of every station at each 2 hour mark.
+
+\subsection*{1(e) Blue Bikes Business}
+
+\textbf{Solution:}
+
+\textbf{Tool Selection:} I'll use Tool 1, Maximum Flow, with the circulation/demands extension.
+
+\textbf{Justification:} This problem involves satisfying supply and demand constraints across a network with capacity limits on transportation. Tool 1 explicitly supports circulations with supply/demand nodes, which fits this scenario exactly. We don't need Tool 2 since there's no cost to minimize; we only care about feasibility.
+
+\textbf{Reduction Construction:} Process each 2-hour time window independently. For a given time window, construct a flow network where each bike station is a vertex. For each van route from $u$ to $v$ with capacity $c(u,v)$, add a directed edge with that capacity. To handle demands, create a super-source $S$ and super-sink $T$. For each station $v$: if $d(v) < 0$ (station has excess bikes to give away), add edge $S \to v$ with capacity $|d(v)|$; if $d(v) > 0$ (station needs bikes), add edge $v \to T$ with capacity $d(v)$. Run max flow from $S$ to $T$. The demands can be satisfied if and only if the max flow equals $\sum_{v: d(v) > 0} d(v)$ (i.e., all demand edges to $T$ are saturated). Repeat for all 5 time windows (8-10, 10-12, 12-2, 2-4, 4-6). Return True only if all windows pass.
+
+\textbf{Time Complexity:} For each time slot, the reduction takes $O(V + E)$ to build the augmented graph. The max flow algorithm runs in $O(V \cdot E)$. Checking saturation takes $O(V)$. With 5 time slots, total complexity is $O(5 \cdot V \cdot E) = O(V \cdot E)$. 
+
+
+\item \textbf{Weighted Interval Scheduling:} You are given $n$ jobs, each with a start time $s_{i}$, a finish time $f_{i}$, and a weight $w_{i}$. Find the maximum total weight $\sum_{i \in S}^{}w_{i}$ possible for a compatible subset $S$. A subset is compatible if all pair of jobs are compatible, that is, they do not conflict. In other words, for any two jobs $i, j \in S$, either $i$ finishes before $j$ starts or vice versa.
+
+\subsection*{1(f) Weighted Interval Scheduling}
+
+\textbf{Solution:}
+
+\textbf{Tool Selected:} I'll use Tool 2, Minimum Cost Circulations.
+
+\textbf{Justification:} We want to maximize total weight of non-overlapping jobs. By negating weights as costs, maximization becomes minimization. The non-overlapping constraint can be enforced by modeling time as a sequence of nodes where flow must proceed forward, and each job is an edge that ``jumps'' from its start to its finish time.
+
+\textbf{Reduction Construction:} Collect all distinct start and finish times from the $n$ jobs and sort them to get time points $t_1 < t_2 < \cdots < t_k$ where $k \leq 2n$. Create a node for each time point. Add ``idle'' edges $(t_j, t_{j+1})$ for consecutive time points with capacity $\infty$ and cost $0$; these represent time passing without doing any job. For each job $i$ with start time $s_i$ and finish time $f_i$, add an edge from the node for $s_i$ to the node for $f_i$ with capacity 1 and cost $-w_i$. To create a circulation, add a return edge from $t_k$ back to $t_1$ with capacity 1 and cost 0. Set a demand of $-1$ at $t_1$ (source) and $+1$ at $t_k$ (sink), or equivalently force exactly 1 unit of flow through the return edge. Run minimum cost circulation. The maximum weight is the negation of the minimum cost.
+
+\textbf{Time Complexity:} Sorting the $2n$ time points takes $O(n \log n)$. Building the graph with $O(n)$ vertices and $O(n)$ edges takes $O(n)$. The tool runs in $O(V^2 \cdot E \log C)$ where $V = O(n)$ and $E = O(n)$, giving $O(n^3 \log C)$. Extraction is $O(1)$ by negating the cost. Total complexity is $O(n^3 \log C)$. 
+
+  
+\end{enumerate}
+
+
+\clearpage
+\newproblem{ILP Reductions}{}
+The following problems require an additional constraint on linear programs: the variables are all limited to (some) integer values.
+
+\hint{Limiting to $\{0, 1\}$ is often very useful.}
+
+\begin{enumerate}[label=(\alph*)]
+\item \textsc{Knapsack:} Given a set of items $I$ with values $v: I \to \RR$ and weights $w:I\to \RR$ for each item, find the collection of items that has the maximum value subject to the total weight of chosen items being less than $W$.
+
+\subsection*{2(a) Knapsack}
+
+\textbf{Solution:}
+
+\textbf{Tool Selected:} I'll use Integer Linear Programming.
+
+\textbf{Justification:} The knapsack problem requires selecting whole items (we cannot take half of an item), which necessitates integer variables. Specifically, binary variables indicate whether each item is included or not, and we optimize a linear objective under a linear constraint.
+
+\textbf{Reduction Construction:} For each item $i \in I$, introduce a binary variable $x_i \in \{0, 1\}$ where $x_i = 1$ means item $i$ is selected. The objective is to maximize total value: $\max \sum_{i \in I} v(i) \cdot x_i$. The weight constraint is: $\sum_{i \in I} w(i) \cdot x_i \leq W$. Run the ILP solver.
+
+\textbf{Time Complexity:} Setting up the ILP requires $O(|I|)$ time to create variables and the constraint. The ILP solver has exponential worst-case runtime since ILP is NP-hard. Extracting the solution requires $O(|I|)$ time to read which $x_i = 1$ and include those items. 
+
+  
+\item You are \textit{The Sovereign}, responsible for maintaining stability across the Dimensions of Reality. You must ensure that disputes between gods, deities, angels, demons, devils and other such cosmic entities do not rupture reality itself. To do this, you need to create separate planes for existence and place the entities such that no two entities who have any disputes end up in the same plane. Of course, you want to accomplish this using as few planes of existence as possible.
+
+Your knowledge allows you to know, for any pair of entities, whether there are any disputes between them (throughout the past, present or future). Your goal is to determine, for each entity, which plane of existence they would be assigned such that if two entities are assigned to plane $i$, then there is no dispute between them.
+
+\subsection*{2(b) The Sovereign (Graph Coloring)}
+
+\textbf{Solution:}
+
+\textbf{Tool Selected:} I'll use Integer Linear Programming.
+
+\textbf{Justification:} This is the graph coloring problem: entities are vertices, disputes are edges, and planes are colors. We must assign colors so adjacent vertices differ, minimizing colors used. Graph coloring requires discrete assignments (an entity can't be in plane 2.7), so ILP with binary variables is appropriate. Regular LP won't work since fractional plane assignments are meaningless.
+
+\textbf{Reduction Construction:} Let $n$ be the number of entities and model disputes as a graph $G = (V, E)$. In the worst case, we need $n$ planes. Create binary variables $y_j \in \{0,1\}$ for $j = 1, \ldots, n$ indicating whether plane $j$ is used. Create binary variables $x_{i,j} \in \{0,1\}$ for each entity $i$ and plane $j$, where $x_{i,j} = 1$ means entity $i$ is assigned to plane $j$.
+
+Objective: Minimize $\sum_{j=1}^{n} y_j$ (total planes used).
+
+Constraints:
+\begin{itemize}
+    \item Each entity goes to exactly one plane: $\sum_{j=1}^{n} x_{i,j} = 1$ for all entities $i$.
+    \item If an entity uses a plane, that plane must be active: $x_{i,j} \leq y_j$ for all $i, j$.
+    \item Disputing entities cannot share a plane: $x_{u,j} + x_{v,j} \leq 1$ for all edges $(u,v) \in E$ and all planes $j$.
+\end{itemize}
+
+\textbf{Time Complexity:} The reduction creates $n + n^2$ variables and $n + n^2 + m \cdot n$ constraints, taking $O(n^2 + mn)$ time. The ILP solver runs in exponential time (NP-hard). Extracting the assignment requires scanning all $x_{i,j}$ variables, taking $O(n^2)$. 
+
+
+\item You are given an undirected graph representing friendships (the edges) between people (the vertices). Let there be $n$ people and $m$ edges in this graph. The goal is to find as large a group of people as possible so that no two people in the group are friends with each other. That is, if we look at the subgraph formed by just these vertices, there would be no edges present.
+
+\subsection*{2(c) Maximum Independent Set}
+
+\textbf{Solution:}
+
+\textbf{Tool Selected:} I'll use Integer Linear Programming.
+
+\textbf{Justification:} Finding a maximum independent set requires choosing vertices such that no two chosen vertices are adjacent. Each vertex is either in the set or not, a binary decision, and we want to maximize the count subject to edge constraints. This maps directly to ILP with binary variables.
+
+\textbf{Reduction Construction:} Given graph $G = (V, E)$, create a binary variable $x_v \in \{0, 1\}$ for each vertex $v \in V$, where $x_v = 1$ means person $v$ is in the group.
+
+Objective: Maximize $\sum_{v \in V} x_v$ (size of the group).
+
+Constraint: For each friendship edge $(u, v) \in E$, at most one of $u$ or $v$ can be selected: $x_u + x_v \leq 1$.
+
+Run the ILP solver and collect all vertices with $x_v = 1$.
+
+\textbf{Time Complexity:} Creating the ILP requires $O(|V|)$ for variables and $O(|E|)$ for constraints, giving $O(|V| + |E|)$ reduction time. The ILP solver has exponential worst-case runtime. Extracting the independent set requires scanning $|V|$ variables, taking $O(|V|)$. 
+
+
+\end{enumerate}
+
+\end{document}
