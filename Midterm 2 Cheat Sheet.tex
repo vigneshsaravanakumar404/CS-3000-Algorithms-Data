@@ -1,0 +1,79 @@
+\documentclass[9pt,landscape]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[landscape,top=0.43in,bottom=0.43in,left=0.35in,right=0.35in]{geometry}
+\usepackage{multicol}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{titlesec}
+
+% Compact spacing
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\setlength{\itemsep}{0pt}
+\setlength{\topsep}{0pt}
+\setlength{\partopsep}{0pt}
+
+% Compact lists
+\setlist{nosep,leftmargin=*,topsep=0pt,partopsep=0pt}
+
+% Compact sections
+\titlespacing{\section}{0pt}{2pt}{1pt}
+\titlespacing{\subsection}{0pt}{1pt}{0.5pt}
+\titleformat{\section}{\normalfont\fontsize{10}{11}\bfseries}{\thesection}{0.5em}{}
+\titleformat{\subsection}{\normalfont\fontsize{9}{10}\bfseries}{\thesubsection}{0.5em}{}
+
+% Compact algorithm environment
+\makeatletter
+\renewcommand{\ALG@beginalgorithmic}{\small}
+\makeatother
+
+% Colored boxes for key concepts
+\newcommand{\bbox}[1]{\colorbox{yellow!20}{{\small\textbf{#1}}}}
+\newcommand{\importantnote}[1]{\textcolor{red}{\textbf{#1}}}
+
+\pagestyle{empty}
+
+\begin{document}
+
+\begin{center}
+    \large{\textbf{CS 3000 Algorithms \& Data: Final Exam Cheat Sheet}} \\
+\end{center}
+
+\begin{multicols*}{3}
+\setlength{\columnseprule}{0.4pt}
+
+% ============= SECTION 1 =============
+\section*{Graphs}
+$G=(V,E)$, $|V|=n$, $|E|=m$.
+
+\textbf{Path}: sequence of vertices with edges between. \textbf{Cycle}: path where start=end.
+
+\textbf{Connected}: can reach any vertex from any other. \textbf{Strongly conn} (dir): can go $u\to v$ and $v\to u$ for all pairs. \textbf{Weakly}: connected if you ignore arrow directions.
+
+\textbf{Bipartite}: split $V$ into 2 sets, edges only between sets. No odd cycles.
+
+\textbf{Acyclic}: no cycles. \textbf{DAG}: directed + acyclic.
+
+\bbox{$\sum \deg(v)=2m$} \quad Max edges: $\binom{n}{2}$, dir: $n(n-1)$
+
+\subsection*{Representations}
+\textbf{Adj Matrix}: $A_{ij}=1$ iff edge. $O(n^2)$ space, $O(1)$ edge, $O(n)$ neighbors.
+
+\textbf{Adj List}: store neighbor lists. $O(n+m)$ space, $O(\deg)$ edge, $O(\deg)$ neighbors.
+
+\subsection*{BST}
+Left $<$ node $\leq$ right. Search/insert/delete: $O(h)$ where $h$=tree height (longest root-to-leaf path). Balanced: $O(\log n)$, worst: $O(n)$.
+
+
+% ============= SECTION 2 =============
+\section*{Another Section}
+
+% Add more sections as needed...
+
+\end{multicols*}
+
+\end{document}
